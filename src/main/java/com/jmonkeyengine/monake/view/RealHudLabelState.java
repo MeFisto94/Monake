@@ -38,6 +38,7 @@ package com.jmonkeyengine.monake.view;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jmonkeyengine.monake.ConnectionState;
@@ -47,7 +48,9 @@ import com.jmonkeyengine.monake.es.components.ArmorComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.simsilica.es.*;
 import com.simsilica.lemur.Container;
+import com.simsilica.lemur.HAlignment;
 import com.simsilica.lemur.Label;
+import com.simsilica.lemur.VAlignment;
 import com.simsilica.lemur.component.BorderLayout;
 import com.simsilica.lemur.style.ElementId;
 import org.slf4j.Logger;
@@ -84,6 +87,19 @@ public class RealHudLabelState extends BaseAppState {
         lblAmmo = new Label("1337", new ElementId("ammo.hud.label"));
         lblArmor = new Label("9000", new ElementId("armor.hud.label"));
         lblHealth = new Label("42", new ElementId("health.hud.label"));
+
+        lblHealth.setColor(ColorRGBA.Red);
+        lblHealth.setFontSize(128f);
+        lblHealth.setTextVAlignment(VAlignment.Center);
+
+        lblArmor.setColor(ColorRGBA.Blue); // just temporarily to tell them apart
+        lblArmor.setFontSize(128f);
+        lblArmor.setTextVAlignment(VAlignment.Center);
+        lblArmor.setTextHAlignment(HAlignment.Center);
+
+        lblAmmo.setColor(ColorRGBA.Yellow);
+        lblAmmo.setFontSize(128f);
+        lblAmmo.setTextVAlignment(VAlignment.Center);
 
         uiContainer.addChild(lblHealth, BorderLayout.Position.West);
         uiContainer.addChild(lblArmor, BorderLayout.Position.Center);
