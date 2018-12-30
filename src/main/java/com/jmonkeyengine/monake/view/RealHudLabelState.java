@@ -151,6 +151,9 @@ public class RealHudLabelState extends BaseAppState {
     protected void onEnable() {
         ((Main)getApplication()).getGuiNode().attachChild(hudLabelRoot);
         playerStats = ed.watchEntity(getState(GameSessionState.class).getCharacterId(), HealthComponent.class, ArmorComponent.class);
+        if (playerStats.isComplete()) {
+            updateStats();
+        } // if not complete, we'd run into null pointers
     }
 
     @Override
@@ -164,10 +167,14 @@ public class RealHudLabelState extends BaseAppState {
     @Override
     public void update( float tpf ) {
         if (playerStats.applyChanges()) { // Update the UI
-            lblHealth.setText(String.valueOf(playerStats.get(HealthComponent.class).getHealth()));
-            lblArmor.setText(String.valueOf(playerStats.get(ArmorComponent.class).getArmor()));
-            //lblAmmo.setText(String.valueOf(playerStats.get(HealthComponent.class).getHealth()));
-            System.out.println("Update Changes");
+            updateStats();
         }
+    }
+
+    protected void updateStats() {
+        lblHealth.setText(String.valueOf(playerStats.get(HealthComponent.class).getHealth()));
+        lblArmor.setText(String.valueOf(playerStats.get(ArmorComponent.class).getArmor()));
+        //lblAmmo.setText(String.valueOf(playerStats.get(HealthComponent.class).getHealth()));
+        System.out.println("Update Changes");
     }
 }
