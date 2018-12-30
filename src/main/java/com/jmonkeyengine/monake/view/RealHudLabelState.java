@@ -36,22 +36,24 @@
 
 package com.jmonkeyengine.monake.view;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jmonkeyengine.monake.ConnectionState;
 import com.jmonkeyengine.monake.GameSessionState;
 import com.jmonkeyengine.monake.Main;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.simsilica.es.*;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.HAlignment;
-import com.simsilica.lemur.Label;
-import com.simsilica.lemur.VAlignment;
-import com.simsilica.lemur.component.BorderLayout;
+import com.simsilica.lemur.*;
+import com.simsilica.lemur.component.*;
+import com.simsilica.lemur.core.GuiControl;
 import com.simsilica.lemur.style.ElementId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +73,13 @@ public class RealHudLabelState extends BaseAppState {
     protected WatchedEntity playerStats;
 
     Container uiContainer;
+    Container portraitContainerContainer;
+    Container portraitContainer;
+    Spatial portrait;
     Label lblHealth;
     Label lblArmor;
     Label lblAmmo;
+    AnimChannel animChannel;
 
     public RealHudLabelState() {
     }
@@ -101,13 +107,38 @@ public class RealHudLabelState extends BaseAppState {
         lblAmmo.setFontSize(128f);
         lblAmmo.setTextVAlignment(VAlignment.Center);
 
+        // @TODO: WHY THE HELL IS JAIME PLACED ABOVE THE BAR AND NOT BELOW?
+        portraitContainerContainer = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.Even, FillMode.None), "");
+        //portraitContainerContainer = new Container(new BoxLayout(Axis.X, FillMode.Even),"");
+        //portraitContainerContainer = new Container(new BorderLayout(), "");
+
         uiContainer.addChild(lblHealth, BorderLayout.Position.West);
-        uiContainer.addChild(lblArmor, BorderLayout.Position.Center);
+        uiContainer.addChild(portraitContainerContainer, BorderLayout.Position.Center);
         uiContainer.addChild(lblAmmo, BorderLayout.Position.East);
 
         uiContainer.setPreferredSize(new Vector3f(app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
         uiContainer.setLocalTranslation(0f, 0.25f * app.getCamera().getHeight(), 0f);
         hudLabelRoot.attachChild(uiContainer);
+
+        portraitContainer = new Container("");
+        //@TODO: Doesn't work, get a proper Border.
+        //portraitContainer.setBorder(new QuadBackgroundComponent(ColorRGBA.Red));
+        portrait = app.getAssetManager().loadModel("Models/Jaime.j3o");
+        portrait.addLight(new DirectionalLight(Vector3f.UNIT_Z.negate()));
+        portrait.setLocalScale(100f); // world units to pixel
+        portrait.addControl(new GuiControl(""));
+        portrait.getControl(GuiControl.class).setPreferredSize(new Vector3f(
+                0.1f * app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
+        animChannel = portrait.getControl(AnimControl.class).createChannel();
+        animChannel.setAnim("Walk");
+        portraitContainer.addChild((Node)portrait);
+
+        // @TODO: WHY DOES ALL THIS RESCALING JUST NOT WORK?
+        portrait.setLocalTranslation(0f, -200f, 0f);
+        portraitContainer.setLocalTranslation(0f, -0.25f * app.getCamera().getHeight(), 0f);
+
+        portraitContainerContainer.addChild(lblArmor); //, BorderLayout.Position.West);
+        portraitContainerContainer.addChild(portraitContainer); // , BorderLayout.Position.Center);
     }
 
     @Override
