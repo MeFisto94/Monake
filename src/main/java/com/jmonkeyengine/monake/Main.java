@@ -36,11 +36,14 @@
 
 package com.jmonkeyengine.monake;
 
-import com.jme3.app.*;
+import com.jme3.app.BasicProfilerState;
+import com.jme3.app.DebugKeysAppState;
+import com.jme3.app.SimpleApplication;
+import com.jme3.app.StatsAppState;
 import com.jme3.app.state.ScreenshotAppState;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
-
+import com.jmonkeyengine.monake.view.PlayerMovementFunctions;
 import com.simsilica.event.EventBus;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.OptionPanelState;
@@ -48,8 +51,6 @@ import com.simsilica.lemur.anim.AnimationState;
 import com.simsilica.lemur.style.BaseStyles;
 import com.simsilica.state.DebugHudState;
 import com.simsilica.util.LogAdapter;
-
-import com.jmonkeyengine.monake.view.PlayerMovementFunctions;
 
 /**
  *  The main bootstrap class for the SimEthereal networking com.jmonkeyengine.monake.example
@@ -134,13 +135,6 @@ public class Main extends SimpleApplication {
         if( inputManager.hasMapping(INPUT_MAPPING_EXIT) ) {
             inputManager.deleteMapping(INPUT_MAPPING_EXIT);
         }
- 
-        /*
-        Spatial test = assetManager.loadModel("Models/fighter.j3o");
-        Texture texture = assetManager.loadTexture("Textures/ship1.png");
-        Material mat = globals.createMaterial(texture, false).getMaterial();
-        test.setMaterial(mat);
-        rootNode.attachChild(test);*/
                        
     }
     

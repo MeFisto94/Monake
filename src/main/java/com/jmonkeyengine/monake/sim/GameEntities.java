@@ -36,10 +36,10 @@
 
 package com.jmonkeyengine.monake.sim;
 
-import com.jmonkeyengine.monake.es.MassProperties;
-import com.jmonkeyengine.monake.es.ObjectTypes;
-import com.jmonkeyengine.monake.es.Position;
-import com.jmonkeyengine.monake.es.SphereShape;
+import com.jmonkeyengine.monake.bullet.Mass;
+import com.jmonkeyengine.monake.bullet.ShapeInfo;
+import com.jmonkeyengine.monake.bullet.SpawnPosition;
+import com.jmonkeyengine.monake.es.*;
 import com.jmonkeyengine.monake.es.components.AmmoComponent;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
@@ -89,7 +89,15 @@ public class GameEntities {
 
     public static EntityId createWorld(EntityData ed) {
         EntityId result = ed.createEntity();
-        ed.setComponents(result, ObjectTypes.worldType(ed), new Position(0f, 0f, 0f));
+        ed.setComponents(result, ObjectTypes.worldType(ed), new SpawnPosition(0f, 0f, 0f),
+                new Position(0f, 0f, 0f), new Mass(0), ShapeInfos.worldInfo(ed));
+        return result;
+    }
+
+    public static EntityId createBox(EntityData ed, float xOffset) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.boxType(ed), new SpawnPosition(xOffset, 1000f, 0f),
+                new Position(xOffset, 1000f, 0f), new Mass(1), ShapeInfos.boxInfo(ed));
         return result;
     }
 }

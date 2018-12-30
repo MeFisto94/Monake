@@ -78,6 +78,10 @@ public class BasicEnvironment extends AbstractGameSystem {
 
         // Load the Map here:
         GameEntities.createWorld(ed);
+
+        for (int i = 0; i < 3; i++) {
+            GameEntities.createBox(ed, i * 5);
+        }
     }
     
     @Override

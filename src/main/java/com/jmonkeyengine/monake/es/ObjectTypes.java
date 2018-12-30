@@ -49,6 +49,7 @@ public class ObjectTypes {
     public static final String SHIP = "ship";
     public static final String GRAV_SPHERE = "gravSphere";
     public static final String WORLD = "world";
+    public static final String BOX = "box";
     
     public static ObjectType shipType( EntityData ed ) {
         return ObjectType.create(SHIP, ed);
@@ -60,5 +61,9 @@ public class ObjectTypes {
 
     public static ObjectType worldType(EntityData ed) {
         return ObjectType.create(WORLD, ed);
+    }
+
+    public static ObjectType boxType(EntityData ed) {
+        return ObjectType.create(BOX, ed);
     }
 }

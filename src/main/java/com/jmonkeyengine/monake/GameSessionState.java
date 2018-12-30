@@ -36,27 +36,22 @@
 
 package com.jmonkeyengine.monake;
 
-import com.jmonkeyengine.monake.view.*;
-import com.simsilica.ethereal.SynchedTimeSource;
-import org.slf4j.*;
-
 import com.jme3.app.Application;
-import com.jme3.math.*;
-
+import com.jme3.math.ColorRGBA;
+import com.jmonkeyengine.monake.debug.TimeSequenceState;
+import com.jmonkeyengine.monake.net.GameSessionListener;
+import com.jmonkeyengine.monake.net.chat.ChatSessionListener;
+import com.jmonkeyengine.monake.net.chat.client.ChatClientService;
+import com.jmonkeyengine.monake.net.client.GameSessionClientService;
+import com.jmonkeyengine.monake.view.*;
+import com.simsilica.es.EntityId;
+import com.simsilica.ethereal.SynchedTimeSource;
 import com.simsilica.event.EventBus;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.input.InputMapper;
 import com.simsilica.state.CompositeAppState;
-
-import com.simsilica.ethereal.TimeSource;
-
-import com.simsilica.es.EntityId;
-
-import com.jmonkeyengine.monake.debug.TimeSequenceState;
-import com.jmonkeyengine.monake.net.GameSessionListener;
-import com.jmonkeyengine.monake.net.client.GameSessionClientService;
-import com.jmonkeyengine.monake.net.chat.ChatSessionListener;
-import com.jmonkeyengine.monake.net.chat.client.ChatClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *  The core state that manages the game session.  This has several
@@ -101,6 +96,10 @@ public class GameSessionState extends CompositeAppState {
 
         addChild(new HelpState(), true); 
         addChild(new PlayerListState(), true);
+
+        // @TODO: Somewhen in the end of 2019, try again physics debug on the client (maybe synchronize physics then)
+        /*addChild(new PhysicsDebugState(getState(ConnectionState.class).getEntityData(), shapes, new PositionAdapterImpl()), false);
+        addChild(new ContactDebugState(getState(ConnectionState.class).getEntityData()), false);*/
     }
  
     public EntityId getCharacterId() {

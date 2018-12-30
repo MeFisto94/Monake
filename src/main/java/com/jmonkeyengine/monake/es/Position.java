@@ -36,6 +36,8 @@
 
 package com.jmonkeyengine.monake.es;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
 import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
@@ -73,6 +75,11 @@ public class Position implements EntityComponent {
     public Position( Vec3d loc, Quatd quat ) {
         this.location = loc;
         this.facing = quat;
+    }
+
+    public Position (Vector3f loc, Quaternion quat) {
+        this.location = new Vec3d(loc);
+        this.facing = new Quatd(quat);
     }
     
     public Position changeLocation( Vec3d location ) {

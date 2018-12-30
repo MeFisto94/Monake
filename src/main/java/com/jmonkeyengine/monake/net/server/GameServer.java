@@ -47,6 +47,9 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import com.jmonkeyengine.monake.GameConstants;
 import com.jmonkeyengine.monake.SimpleErrorHandlingSystem;
+import com.jmonkeyengine.monake.bullet.*;
+import com.jmonkeyengine.monake.bullet.debug.DebugPhysicsListener;
+import com.jmonkeyengine.monake.bulletimpl.PositionPublisher;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.Position;
@@ -58,10 +61,14 @@ import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
 import com.jmonkeyengine.monake.sim.BasicEnvironment;
 import com.jmonkeyengine.monake.sim.BodyPositionPublisher;
+import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
 import com.jmonkeyengine.monake.sim.SimplePhysics;
+import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
+import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
 import com.simsilica.es.base.DefaultEntityData;
+import com.simsilica.es.common.Decay;
 import com.simsilica.es.server.EntityDataHostedService;
 import com.simsilica.es.server.EntityUpdater;
 import com.simsilica.ethereal.EtherealHost;
@@ -69,6 +76,7 @@ import com.simsilica.ethereal.NetworkStateListener;
 import com.simsilica.ethereal.TimeSource;
 import com.simsilica.sim.GameLoop;
 import com.simsilica.sim.GameSystemManager;
+import com.simsilica.sim.common.DecaySystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +107,10 @@ public class GameServer {
         Serializer.initialize();
 
         this.systems = new GameSystemManager();
+        // Update at Tick 30, not Tick 60, allows CPU consumption throttling
+        //this.loop = new GameLoop(systems, 2L * 16666667L);
         this.loop = new GameLoop(systems);
+        //loop.setIdleSleepTime(1L);
         
         // Create the SpiderMonkey server and setup our standard
         // initial hosted services 
@@ -151,6 +162,15 @@ public class GameServer {
         
         // Add any hosted services that require those systems to already
         // exist
+
+        // We'll add the decay system first so that things that need to will
+        // get cleaned up at the beginning of update.
+        systems.addSystem(new DecaySystem() {
+            protected void destroyEntity( Entity e ) {
+                super.destroyEntity(e);
+                //log.info("Destroyed:" + e.getId());
+            }
+        });
  
         // Add a system that will forward physics changes to the Ethereal 
         // zone manager       
@@ -168,8 +188,36 @@ public class GameServer {
         // on the clients.
         systems.addSystem(new BodyPositionPublisher());
 
-        //BulletSystem bullet = new BulletSystem();
-        //systems.addSystem();
+        CollisionShapes shapes = systems.register(CollisionShapes.class,
+                new DefaultCollisionShapes(ed, CollisionShapeProvider::lookup));
+
+        CollisionShapeProvider.registerDefaults(ed, shapes);
+
+        BulletSystem bullet = new BulletSystem();
+        // Only Needed with
+        // bullet.addPhysicsObjectListener(new DebugPhysicsListener(ed));
+        bullet.addEntityCollisionListener(new DefaultContactPublisher(ed) {
+            /**
+             *  Overridden to give some extra contact decay time so the
+             *  debug visualization always has a chance to see them.
+             */
+            @Override
+            protected EntityId createEntity( Contact c ) {
+                //System.out.println("Some Collision it seems");
+                EntityId result = ed.createEntity();
+                ed.setComponents(result, c,
+                        Decay.duration(systems.getStepTime().getTime(),
+                                systems.getStepTime().toSimTime(0.1))
+                );
+                return result;
+            }
+        });
+
+        // sets the Position() component in relation to recent physics events
+        PositionPublisher pp = new PositionPublisher();
+        bullet.addPhysicsObjectListener(pp);
+        systems.addSystem(pp);
+        systems.register(BulletSystem.class, bullet);
 
         // Register some custom serializers
         registerSerializers();
@@ -185,7 +233,7 @@ public class GameServer {
         
         log.info("Initializing game systems...");
         // Initialize the game system manager to prepare to start later
-        systems.initialize();        
+        systems.initialize();
     }
     
     protected void registerSerializers() {

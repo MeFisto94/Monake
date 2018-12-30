@@ -85,7 +85,7 @@ public class DebugPhysicsListener implements PhysicsObjectListener {
             BodyDebugStatus existing = ed.getComponent(object.getId(), BodyDebugStatus.class);
             if( existing == null || existing.getStatus() != status ) {
                 ed.setComponent(object.getId(), new BodyDebugStatus(status));
-            } 
+            }
         }
     }
     

@@ -211,6 +211,18 @@ public class ModelViewState extends BaseAppState {
         return geom;
     }
 
+    protected Spatial createBox(Entity entity) {
+        Spatial box = new Geometry("Box", new Box(1f, 1f, 1f));
+        Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Blue);
+        box.setMaterial(mat);
+
+        Node result = new Node("World: " + entity.getId());
+        result.attachChild(box);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
     protected Spatial createModel( Entity entity ) {
         // Check to see if one already exists
         Spatial result = modelIndex.get(entity.getId());
@@ -232,6 +244,11 @@ public class ModelViewState extends BaseAppState {
             case ObjectTypes.WORLD:
                 result = createWorld(entity);
                 break;
+
+            case ObjectTypes.BOX:
+                result = createBox(entity);
+                break;
+
             default:
                 throw new RuntimeException("Unknown spatial type:" + typeName); 
         }

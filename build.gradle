@@ -35,6 +35,8 @@ dependencies {
         force = true
     }
     compile "org.jmonkeyengine:jme3-desktop:$jmeVersion"
+    compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
+    compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
     compile "org.jmonkeyengine:jme3-lwjgl:$jmeVersion"
     compile("org.jmonkeyengine:jme3-networking:$jmeVersion") {
         force = true;

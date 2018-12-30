@@ -244,11 +244,12 @@ public PhysicsSpace getSpace() {
 
     @Override
     public void update( SimTime time ) {
-    
+
+        /* Commented out BECAUSE: GameServer is run on the MainThread [when Self-Hosting], but after that everything is run in a GameLoop.
         if( baseThread != Thread.currentThread() ) {
             throw new IllegalStateException("The bullet system must be updated from the same thread it was initialized."
                                             + " initialized from:" + baseThread + " updated from:" + Thread.currentThread());
-        }
+        }*/
     
         super.update(time);
         
