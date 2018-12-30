@@ -37,6 +37,7 @@
 package com.jmonkeyengine.monake;
 
 import com.jmonkeyengine.monake.view.*;
+import com.simsilica.ethereal.SynchedTimeSource;
 import org.slf4j.*;
 
 import com.jme3.app.Application;
@@ -125,7 +126,7 @@ public class GameSessionState extends CompositeAppState {
         getState(ConnectionState.class).getService(GameSessionClientService.class).addGameSessionListener(gameSessionObserver);
 
         // Give the time state its time source
-        TimeSource timeSource = getState(ConnectionState.class).getRemoteTimeSource();
+        SynchedTimeSource timeSource = getState(ConnectionState.class).getRemoteTimeSource();
         getState(TimeState.class).setTimeSource(timeSource);
 
         // Setup the chat related services

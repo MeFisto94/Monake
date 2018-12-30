@@ -39,6 +39,8 @@ package com.jmonkeyengine.monake;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import com.simsilica.ethereal.SynchedTimeSource;
+import com.simsilica.ethereal.net.RemoteTimeSource;
 import org.slf4j.*;
 
 import com.google.common.base.Strings;
@@ -100,8 +102,9 @@ public class ConnectionState extends CompositeAppState {
         return client.getClient().getId();
     }
 
-    public TimeSource getRemoteTimeSource() {    
-        return getService(EtherealClient.class).getTimeSource();        
+    public SynchedTimeSource getRemoteTimeSource() {
+        /* Cast is valid because the return type of getTimeSource is a RemoteTimeSource, so this is only an overlooking */
+        return (SynchedTimeSource)getService(EtherealClient.class).getTimeSource();
     }
 
     public EntityData getEntityData() {

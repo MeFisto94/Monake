@@ -39,6 +39,7 @@ package com.jmonkeyengine.monake;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 
+import com.simsilica.ethereal.SynchedTimeSource;
 import com.simsilica.ethereal.TimeSource;
 
 
@@ -57,22 +58,22 @@ import com.simsilica.ethereal.TimeSource;
  */
 public class TimeState extends BaseAppState {
 
-    private TimeSource timeSource;
+    private SynchedTimeSource timeSource;
     private long frameTime;
     private long realTime;
 
     public TimeState() {
     }
     
-    public TimeState( TimeSource timeSource ) {
+    public TimeState( SynchedTimeSource timeSource ) {
         this.timeSource = timeSource;
     }
  
-    public void setTimeSource( TimeSource timeSource ) {
+    public void setTimeSource( SynchedTimeSource timeSource ) {
         this.timeSource = timeSource;
     }
     
-    public TimeSource getTimeSource() {
+    public SynchedTimeSource getTimeSource() {
         return timeSource;
     }
     
