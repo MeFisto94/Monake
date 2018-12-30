@@ -48,6 +48,7 @@ import com.simsilica.es.EntityData;
 public class ObjectTypes {
     public static final String SHIP = "ship";
     public static final String GRAV_SPHERE = "gravSphere";
+    public static final String WORLD = "world";
     
     public static ObjectType shipType( EntityData ed ) {
         return ObjectType.create(SHIP, ed);
@@ -55,5 +56,9 @@ public class ObjectTypes {
     
     public static ObjectType gravSphereType( EntityData ed ) {
         return ObjectType.create(GRAV_SPHERE, ed);
+    }
+
+    public static ObjectType worldType(EntityData ed) {
+        return ObjectType.create(WORLD, ed);
     }
 }

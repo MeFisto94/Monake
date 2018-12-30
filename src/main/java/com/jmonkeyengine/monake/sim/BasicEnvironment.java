@@ -75,6 +75,9 @@ public class BasicEnvironment extends AbstractGameSystem {
                 }
             }
         }
+
+        // Load the Map here:
+        GameEntities.createWorld(ed);
     }
     
     @Override

@@ -46,6 +46,7 @@ import com.jme3.math.Vector2f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Texture;
 import com.jmonkeyengine.monake.ConnectionState;
@@ -174,6 +175,18 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
+    protected Spatial createWorld(Entity entity) {
+        Spatial world = new Geometry("World", new Box(64f, 0.5f, 64f));
+        Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Red);
+        world.setMaterial(mat);
+
+        Node result = new Node("World: " + entity.getId());
+        result.attachChild(world);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
     protected Spatial createGravSphere( Entity entity ) {
         
         SphereShape shape = ed.getComponent(entity.getId(), SphereShape.class);
@@ -214,6 +227,10 @@ public class ModelViewState extends BaseAppState {
                 break;
             case ObjectTypes.GRAV_SPHERE:
                 result = createGravSphere(entity);
+                break;
+
+            case ObjectTypes.WORLD:
+                result = createWorld(entity);
                 break;
             default:
                 throw new RuntimeException("Unknown spatial type:" + typeName); 

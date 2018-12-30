@@ -86,4 +86,10 @@ public class GameEntities {
                          new SphereShape(radius, new Vec3d()));
         return result;         
     }
+
+    public static EntityId createWorld(EntityData ed) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.worldType(ed), new Position(0f, 0f, 0f));
+        return result;
+    }
 }
