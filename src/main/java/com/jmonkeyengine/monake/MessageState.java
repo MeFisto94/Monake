@@ -112,7 +112,8 @@ public class MessageState extends BaseAppState {
         // we can also animate this node to slide up from a lower
         // position to make it look like the messages are sliding
         // up smoothly.
-        messageRoot = new Node("MessageRoot");            
+        messageRoot = new Node("MessageRoot");
+        setMessageRootOffset(new Vector3f(0f, 0.25f * app.getCamera().getHeight(), 0f));
     }
     
     @Override

@@ -126,10 +126,10 @@ public class CommandConsoleState extends BaseAppState {
         pref.x = getApplication().getCamera().getWidth();
         entryPanel.setPreferredSize(pref);
         
-        // Make the entry panel visible
-        entryPanel.setLocalTranslation(0, pref.y, 0);
+        // Make the entry panel visible and offset it by 25% (our HUD)
+        entryPanel.setLocalTranslation(0, pref.y + 0.25f * getApplication().getCamera().getHeight(), 0);
         
-        getState(MessageState.class).setMessageRootOffset(new Vector3f(0, pref.y, 0));
+        getState(MessageState.class).setMessageRootOffset(new Vector3f(0, entryPanel.getLocalTranslation().y, 0));
         
         GuiGlobals.getInstance().requestFocus(entry);
     }
@@ -138,7 +138,7 @@ public class CommandConsoleState extends BaseAppState {
     protected void onDisable() {
         GuiGlobals.getInstance().requestFocus(null);
         entryPanel.removeFromParent();
-        getState(MessageState.class).setMessageRootOffset(new Vector3f(0, 0, 0));
+        getState(MessageState.class).setMessageRootOffset(new Vector3f(0, 0.25f * getApplication().getCamera().getHeight(), 0));
     }
     
     private class NewLine implements KeyActionListener {

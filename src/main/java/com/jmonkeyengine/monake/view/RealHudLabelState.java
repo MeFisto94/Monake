@@ -90,7 +90,7 @@ public class RealHudLabelState extends BaseAppState {
         uiContainer.addChild(lblAmmo, BorderLayout.Position.East);
 
         uiContainer.setPreferredSize(new Vector3f(app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
-        uiContainer.setLocalTranslation(0f, 0.75f * app.getCamera().getHeight(), 0f);
+        uiContainer.setLocalTranslation(0f, 0.25f * app.getCamera().getHeight(), 0f);
         hudLabelRoot.attachChild(uiContainer);
     }
 
