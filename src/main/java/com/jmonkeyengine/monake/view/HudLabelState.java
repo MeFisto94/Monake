@@ -167,7 +167,7 @@ public class HudLabelState extends BaseAppState {
             // If this is the player's ship then we don't want the model
             // shown else it looks bad.  A) it's ugly.  B) the model will
             // always lag the player's turning.
-            if( entity.getId().getId() == getState(GameSessionState.class).getShipId().getId() ) {
+            if( entity.getId().getId() == getState(GameSessionState.class).getCharacterId().getId() ) {
                 this.isPlayerEntity = true;
             }
             

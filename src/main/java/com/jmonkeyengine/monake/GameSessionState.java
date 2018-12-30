@@ -81,7 +81,7 @@ public class GameSessionState extends CompositeAppState {
     private int clientId;
     
     private EntityId playerId;
-    private EntityId shipId;
+    private EntityId characterId;
 
     public GameSessionState() {
         // add normal states on the super-constructor
@@ -107,8 +107,8 @@ public class GameSessionState extends CompositeAppState {
         addChild(new PlayerListState(), true); 
     }
  
-    public EntityId getShipId() {
-        return shipId;
+    public EntityId getCharacterId() {
+        return characterId;
     }
  
     public void disconnect() {
@@ -144,9 +144,9 @@ public class GameSessionState extends CompositeAppState {
         clientId = getState(ConnectionState.class).getClientId();
         us = getState(PlayerMovementState.class);
         playerId = getState(ConnectionState.class).getService(GameSessionClientService.class).getPlayer();
-        shipId = getState(ConnectionState.class).getService(GameSessionClientService.class).getShip();
-        log.info("Player object:" + shipId);
-        us.setShipId(shipId);
+        characterId = getState(ConnectionState.class).getService(GameSessionClientService.class).getShip();
+        log.info("Player object:" + characterId);
+        us.setShipId(characterId);
     }
     
     @Override   
