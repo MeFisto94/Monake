@@ -50,6 +50,10 @@ import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.Position;
 import com.jmonkeyengine.monake.es.SphereShape;
+import com.jmonkeyengine.monake.es.components.AmmoComponent;
+import com.jmonkeyengine.monake.es.components.ArmorComponent;
+import com.jmonkeyengine.monake.es.components.HealthComponent;
+import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
 import com.jmonkeyengine.monake.sim.BasicEnvironment;
 import com.jmonkeyengine.monake.sim.BodyPositionPublisher;
@@ -179,6 +183,10 @@ public class GameServer {
         Serializer.registerClass(ObjectType.class, new FieldSerializer());
         Serializer.registerClass(Position.class, new FieldSerializer());
         Serializer.registerClass(SphereShape.class, new FieldSerializer());
+        Serializer.registerClass(AmmoComponent.class, new FieldSerializer());
+        Serializer.registerClass(ArmorComponent.class, new FieldSerializer());
+        Serializer.registerClass(HealthComponent.class, new FieldSerializer());
+        Serializer.registerClass(IsPickupComponent.class, new FieldSerializer());
     }      
     
     public Server getServer() {
