@@ -49,7 +49,7 @@ import com.simsilica.mathd.Vec3d;
 /**
  *  Utility methods for creating the common game entities used by 
  *  the simulation.  In cases where a game entity may have multiple
- *  specific componnets or dependencies used to create it, it can be
+ *  specific components or dependencies used to create it, it can be
  *  more convenient to have a centralized factory method.  Especially
  *  if those objects are widely used.  For entities with only a few
  *  components or that are created by one system and only consumed by
@@ -59,7 +59,7 @@ import com.simsilica.mathd.Vec3d;
  */
 public class GameEntities {
 
-    public static EntityId createShip( EntityId parent, EntityData ed ) {
+    public static EntityId createCharacter(EntityId parent, EntityData ed ) {
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);

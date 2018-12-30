@@ -253,7 +253,7 @@ public class ModelViewState extends BaseAppState {
         public Mob( Entity entity ) {
             this.entity = entity;
 
-            this.spatial = createModel(entity); //createShip(entity);
+            this.spatial = createModel(entity); //createCharacter(entity);
             //modelRoot.attachChild(spatial);
  
             BodyPosition bodyPos = entity.get(BodyPosition.class);

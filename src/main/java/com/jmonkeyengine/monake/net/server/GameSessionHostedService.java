@@ -158,7 +158,7 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
  
         // Setup to start using SimEthereal synching
         getService(EtherealHost.class).startHostingOnConnection(conn);
-        getService(EtherealHost.class).setConnectionObject(conn, session.shipEntity.getId(), new Vec3d());       
+        getService(EtherealHost.class).setConnectionObject(conn, session.characterEntity.getId(), new Vec3d());
  
         // Start hosting on the chat server also
         String name = AccountHostedService.getPlayerName(conn);
@@ -220,7 +220,7 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
         private HostedConnection conn;
         private GameSessionListener callback;
         private EntityId playerEntity;
-        private EntityId shipEntity;
+        private EntityId characterEntity;
         private ShipDriver shipDriver;
         
         public GameSessionImpl( EntityId playerEntity, HostedConnection conn ) {
@@ -230,17 +230,17 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
             // Create a ship for the player
             this.shipDriver = new ShipDriver();
             
-            this.shipEntity = GameEntities.createShip(playerEntity, ed);
+            this.characterEntity = GameEntities.createCharacter(playerEntity, ed);
             
             // Set the ship driver directly on the Body.  This could
             // also have been managed with a component-based system but 
             // that will wait.
-            physics.setControlDriver(shipEntity, shipDriver);
+            physics.setControlDriver(characterEntity, shipDriver);
             
             // Set the position when we want the ship to actually appear
             // in space 'for real'.
-            ed.setComponent(shipEntity, new Position(1, 1, 1));
-System.out.println("Set position on:" + shipEntity);            
+            ed.setComponent(characterEntity, new Position(1, 1, 1));
+            System.out.println("Set position on:" + characterEntity);
         }
  
         public void initialize() {
@@ -249,12 +249,12 @@ System.out.println("Set position on:" + shipEntity);
         public void close() {
             log.debug("Closing game session for:" + conn);        
             // Remove our physics body
-            //physics.removeBody(shipEntity);
+            //physics.removeBody(characterEntity);
             // Physics body is now removed as a side-effect of the entity
             // going away.
             
             // Remove the ship we created
-            ed.removeEntity(shipEntity);
+            ed.removeEntity(characterEntity);
         }
  
         @Override
@@ -264,7 +264,7 @@ System.out.println("Set position on:" + shipEntity);
 
         @Override
         public EntityId getShip() {
-            return shipEntity;
+            return characterEntity;
         }
         
         @Override   
