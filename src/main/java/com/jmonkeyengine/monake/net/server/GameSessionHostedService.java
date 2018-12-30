@@ -253,7 +253,7 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
             // Physics body is now removed as a side-effect of the entity
             // going away.
             
-            // Remove the ship we created
+            // Remove the character we created
             ed.removeEntity(characterEntity);
         }
  
