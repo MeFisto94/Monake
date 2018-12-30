@@ -15,3 +15,9 @@ gradle-app.setting
 
 # Ignore IntelliJ
 .idea
+
+# Ignore Linux Linked Libraries
+*.so
+
+# Ignore Logs
+*.log
