@@ -40,6 +40,9 @@ import com.jmonkeyengine.monake.es.MassProperties;
 import com.jmonkeyengine.monake.es.ObjectTypes;
 import com.jmonkeyengine.monake.es.Position;
 import com.jmonkeyengine.monake.es.SphereShape;
+import com.jmonkeyengine.monake.es.components.AmmoComponent;
+import com.jmonkeyengine.monake.es.components.ArmorComponent;
+import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
@@ -65,7 +68,14 @@ public class GameEntities {
         ed.setComponent(result, name);
         ed.setComponents(result, ObjectTypes.shipType(ed),
                          new MassProperties(1/50.0), new SphereShape(3, new Vec3d()));
-        
+        ed.setComponents(result, new HealthComponent(100), new ArmorComponent(0));
+        return result;
+    }
+
+    public static EntityId createWeapon(EntityData ed) {
+        // @TODO: Add WeaponType and a Weapon Component
+        EntityId result = ed.createEntity();
+        ed.setComponent(result, new AmmoComponent(64));
         return result;
     }
     
