@@ -46,6 +46,7 @@ import com.jme3.network.service.HostedServiceManager;
 import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import com.jmonkeyengine.monake.GameConstants;
+import com.jmonkeyengine.monake.SimpleErrorHandlingSystem;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.Position;
@@ -167,6 +168,9 @@ public class GameServer {
         // on the clients.
         systems.addSystem(new BodyPositionPublisher());
 
+        //BulletSystem bullet = new BulletSystem();
+        //systems.addSystem();
+
         // Register some custom serializers
         registerSerializers();
         
@@ -175,6 +179,9 @@ public class GameServer {
  
         // Add a system for creating the basic "world" entities
         systems.addSystem(new BasicEnvironment());
+
+        // Some Errors aren't printed out so we listen for these events
+        systems.addSystem(new SimpleErrorHandlingSystem());
         
         log.info("Initializing game systems...");
         // Initialize the game system manager to prepare to start later
