@@ -130,15 +130,17 @@ public class RealHudLabelState extends BaseAppState {
         portrait.getControl(GuiControl.class).setPreferredSize(new Vector3f(
                 0.1f * app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
         animChannel = portrait.getControl(AnimControl.class).createChannel();
-        animChannel.setAnim("Walk");
+        animChannel.setAnim("Wave");
         portraitContainer.addChild((Node)portrait);
-
-        // @TODO: WHY DOES ALL THIS RESCALING JUST NOT WORK?
-        portrait.setLocalTranslation(0f, -200f, 0f);
-        portraitContainer.setLocalTranslation(0f, -0.25f * app.getCamera().getHeight(), 0f);
 
         portraitContainerContainer.addChild(lblArmor); //, BorderLayout.Position.West);
         portraitContainerContainer.addChild(portraitContainer); // , BorderLayout.Position.Center);
+
+        // @TODO: WHY DOES ALL THIS RESCALING JUST NOT WORK?
+        // @TODO: Nothing of these translations work...
+        portrait.setLocalTranslation(0f, -200f, 0f);
+        //portraitContainer.setLocalTranslation(0f, +0.25f * app.getCamera().getHeight(), 0f);
+
     }
 
     @Override
