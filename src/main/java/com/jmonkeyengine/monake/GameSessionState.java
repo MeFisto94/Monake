@@ -36,6 +36,7 @@
 
 package com.jmonkeyengine.monake;
 
+import com.jmonkeyengine.monake.view.*;
 import org.slf4j.*;
 
 import com.jme3.app.Application;
@@ -55,12 +56,6 @@ import com.jmonkeyengine.monake.net.GameSessionListener;
 import com.jmonkeyengine.monake.net.client.GameSessionClientService;
 import com.jmonkeyengine.monake.net.chat.ChatSessionListener;
 import com.jmonkeyengine.monake.net.chat.client.ChatClientService;
-import com.jmonkeyengine.monake.view.HudLabelState;
-import com.jmonkeyengine.monake.view.ModelViewState;
-import com.jmonkeyengine.monake.view.PlayerListState;
-import com.jmonkeyengine.monake.view.PlayerMovementState;
-import com.jmonkeyengine.monake.view.SkyState;
-import com.jmonkeyengine.monake.view.SpaceGridState;
 
 /**
  *  The core state that manages the game session.  This has several
@@ -104,7 +99,7 @@ public class GameSessionState extends CompositeAppState {
         addChild(new TimeSequenceState(), true); 
 
         addChild(new HelpState(), true); 
-        addChild(new PlayerListState(), true); 
+        addChild(new PlayerListState(), true);
     }
  
     public EntityId getCharacterId() {
@@ -147,6 +142,10 @@ public class GameSessionState extends CompositeAppState {
         characterId = getState(ConnectionState.class).getService(GameSessionClientService.class).getShip();
         log.info("Player object:" + characterId);
         us.setShipId(characterId);
+
+        // Maybe bad style, but we need to ensure characterId is here...
+        // @TODO: Maybe add it to the above list and just place the access into the first update tick?
+        addChild(new RealHudLabelState(), false);
     }
     
     @Override   
