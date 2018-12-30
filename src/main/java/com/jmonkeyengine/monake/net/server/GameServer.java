@@ -65,6 +65,7 @@ import com.simsilica.es.server.EntityDataHostedService;
 import com.simsilica.es.server.EntityUpdater;
 import com.simsilica.ethereal.EtherealHost;
 import com.simsilica.ethereal.NetworkStateListener;
+import com.simsilica.ethereal.TimeSource;
 import com.simsilica.sim.GameLoop;
 import com.simsilica.sim.GameSystemManager;
 import org.slf4j.Logger;
@@ -138,6 +139,10 @@ public class GameServer {
         EtherealHost ethereal = new EtherealHost(GameConstants.OBJECT_PROTOCOL, 
                                                  GameConstants.ZONE_GRID,
                                                  GameConstants.ZONE_RADIUS);
+
+        // See https://hub.jmonkeyengine.org/t/sim-eth-es-troubleshootings/41249/10
+        ethereal.setTimeSource(() -> systems.getStepTime().getUnlockedTime(System.nanoTime()));
+
         server.getServices().addService(ethereal);
         
         // Add the various game services to the GameSystemManager 
