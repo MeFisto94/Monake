@@ -39,6 +39,7 @@ package com.jmonkeyengine.monake.view;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.asset.AssetNotFoundException;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -173,10 +174,17 @@ public class ModelViewState extends BaseAppState {
     }
 
     protected Spatial createWorld(Entity entity) {
-        Spatial world = new Geometry("World", new Box(64f, 0.5f, 64f));
-        Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Red);
-        world.setMaterial(mat);
+        Spatial world;
+
+        try {
+            world = getApplication().getAssetManager().loadModel("Models/level.j3o");
+        } catch (AssetNotFoundException anf) {
+            // Show programmers art if assets not found
+            world = new Geometry("World", new Box(64f, 0.5f, 64f));
+            Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+            mat.setColor("Color", ColorRGBA.Red);
+            world.setMaterial(mat);
+        }
 
         Node result = new Node("World: " + entity.getId());
         result.attachChild(world);
@@ -373,7 +381,7 @@ public class ModelViewState extends BaseAppState {
     
         @Override       
         protected Mob addObject( Entity e ) {
-System.out.println("MobContainer.addObject(" + e + ")");        
+            System.out.println("MobContainer.addObject(" + e + ")");
             return new Mob(e);
         }
     
@@ -400,7 +408,7 @@ System.out.println("MobContainer.addObject(" + e + ")");
         
         @Override       
         protected Spatial addObject( Entity e ) {
-System.out.println("ModelContainer.addObject(" + e + ")");
+            System.out.println("ModelContainer.addObject(" + e + ")");
             Spatial result = createModel(e);
             updateObject(result, e);
             return result;        
@@ -408,7 +416,7 @@ System.out.println("ModelContainer.addObject(" + e + ")");
     
         @Override       
         protected void updateObject( Spatial object, Entity e ) {
-System.out.println("MobContainer.updateObject(" + e + ")");        
+            System.out.println("MobContainer.updateObject(" + e + ")");
             updateModel(object, e, true);
         }
     
