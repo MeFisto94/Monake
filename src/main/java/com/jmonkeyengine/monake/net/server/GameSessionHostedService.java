@@ -36,10 +36,12 @@
 
 package com.jmonkeyengine.monake.net.server;
 
+import com.jmonkeyengine.monake.bullet.BulletSystem;
 import com.jmonkeyengine.monake.es.Position;
 import com.jmonkeyengine.monake.net.GameSession;
 import com.jmonkeyengine.monake.net.GameSessionListener;
 import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
+import com.jmonkeyengine.monake.sim.*;
 import org.slf4j.*;
 
 import java.util.List;
@@ -65,10 +67,6 @@ import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.server.EntityDataHostedService;
 
-import com.jmonkeyengine.monake.sim.GameEntities;
-import com.jmonkeyengine.monake.sim.ShipDriver;
-import com.jmonkeyengine.monake.sim.SimplePhysics;
-
 /**
  *  Provides game session management for connected players.  This is where
  *  all of the game-session-specific state is organized and managed on behalf
@@ -85,7 +83,6 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
 
     private GameSystemManager gameSystems;
     private EntityData ed;
-    private SimplePhysics physics;    
 
     private RmiHostedService rmiService;
     private AccountObserver accountObserver = new AccountObserver();
@@ -127,13 +124,6 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
             throw new RuntimeException("AccountHostedService requires an EntityDataHostedService");
         }
         this.ed = eds.getEntityData();
-        
-        // Get the physics system... it's not available yet when onInitialize() is called.
-        physics = gameSystems.get(SimplePhysics.class);
-        if( physics == null ) {
-            throw new RuntimeException("GameSessionHostedService requires a SimplePhysics system.");
-        }
-        //physics.addPhysicsListener(new NaivePhysicsSender());        
     }
  
     @Override
@@ -221,21 +211,20 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
         private GameSessionListener callback;
         private EntityId playerEntity;
         private EntityId characterEntity;
-        private ShipDriver characterDriver;
+        private CharInputDriver characterDriver;
         
         public GameSessionImpl( EntityId playerEntity, HostedConnection conn ) {
             this.playerEntity = playerEntity;
             this.conn = conn;
             
-            // Create a ship for the player
-            this.characterDriver = new ShipDriver();
-            
+            // Create a character for the player
             this.characterEntity = GameEntities.createCharacter(playerEntity, ed);
+            this.characterDriver = new CharInputDriver(new CharPhysics());
             
             // Set the ship driver directly on the Body.  This could
             // also have been managed with a component-based system but 
             // that will wait.
-            physics.setControlDriver(characterEntity, characterDriver);
+            gameSystems.get(BulletSystem.class, true).setControlDriver(characterEntity, characterDriver);
             
             // Set the position when we want the ship to actually appear
             // in space 'for real'.
@@ -274,7 +263,8 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
             }
 
             // Need to forward this to the game world
-            characterDriver.applyMovementState(rotation, thrust);
+            //characterDriver.applyMovementState(rotation, thrust);
+            characterDriver.setInput(rotation, thrust, jumping);
         }
         
         protected GameSessionListener getCallback() {

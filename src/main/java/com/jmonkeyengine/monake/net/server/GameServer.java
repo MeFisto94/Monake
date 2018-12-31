@@ -60,7 +60,6 @@ import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
 import com.jmonkeyengine.monake.sim.BasicEnvironment;
 import com.jmonkeyengine.monake.sim.BodyPositionPublisher;
 import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
-import com.jmonkeyengine.monake.sim.SimplePhysics;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
@@ -154,9 +153,7 @@ public class GameServer {
 
         server.getServices().addService(ethereal);
         
-        // Add the various game services to the GameSystemManager 
-        systems.register(SimplePhysics.class, new SimplePhysics());
-        
+        // Add the various game services to the GameSystemManager
         // Add any hosted services that require those systems to already
         // exist
 

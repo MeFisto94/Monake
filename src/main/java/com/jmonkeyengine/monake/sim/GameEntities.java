@@ -66,8 +66,8 @@ public class GameEntities {
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);
-        ed.setComponents(result, ObjectTypes.shipType(ed),
-                         new MassProperties(1/50.0), new SphereShape(3, new Vec3d()));
+        ed.setComponents(result, ObjectTypes.shipType(ed), new Mass(50f), new SpawnPosition(0f, 0f, 0f),
+                ShapeInfos.boxInfo(ed));
         ed.setComponents(result, new HealthComponent(100), new ArmorComponent(0));
         return result;
     }
@@ -96,8 +96,8 @@ public class GameEntities {
 
     public static EntityId createBox(EntityData ed, float xOffset) {
         EntityId result = ed.createEntity();
-        ed.setComponents(result, ObjectTypes.boxType(ed), new SpawnPosition(xOffset, 1000f, 0f),
-                new Position(xOffset, 1000f, 0f), new Mass(1), ShapeInfos.boxInfo(ed));
+        ed.setComponents(result, ObjectTypes.boxType(ed), new SpawnPosition(xOffset, 500f, 0f),
+                new Mass(1), ShapeInfos.boxInfo(ed));
         return result;
     }
 }
