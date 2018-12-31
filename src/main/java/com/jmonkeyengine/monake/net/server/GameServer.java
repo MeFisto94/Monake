@@ -61,6 +61,7 @@ import com.jmonkeyengine.monake.sim.BasicEnvironment;
 import com.jmonkeyengine.monake.sim.BodyPositionPublisher;
 import com.jmonkeyengine.monake.sim.CharFlags;
 import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
+import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
@@ -341,6 +342,8 @@ public class GameServer {
 
         out.close();
         String desc = sOut.toString();
+
+        ServerApplication.createApplication();
 
         GameServer gs = new GameServer(GameConstants.DEFAULT_PORT, desc);
         gs.start();

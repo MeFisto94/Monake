@@ -124,7 +124,7 @@ public class MainMenuState extends BaseAppState {
         try {
             // Add the state to manage the hosting environment.  It will launch
             // a self-connecting ConnectionState on its own.        
-            getStateManager().attach(new HostState(port, hostDescription.getText()));
+            getStateManager().attach(new HostState(port, hostDescription.getText(), getApplication()));
         
             // Disable ourselves
             setEnabled(false);

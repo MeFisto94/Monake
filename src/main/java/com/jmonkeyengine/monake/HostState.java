@@ -38,6 +38,7 @@ package com.jmonkeyengine.monake;
 
 import java.io.*;
 
+import com.jmonkeyengine.monake.util.server.ServerApplication;
 import org.slf4j.*;
 
 import com.jme3.app.Application;
@@ -73,9 +74,11 @@ public class HostState extends BaseAppState {
     private ConnectionListener connectionListener = new ConnectionObserver();
     
     private Container hostWindow;
-    
-    public HostState( int port, String description ) {
+
+    // App is not available in the constructor yet that's why we expose it manually
+    public HostState( int port, String description, Application app) {
         try {
+            ServerApplication.self = app; // Don't create a new Application, we're self-hosting
             this.port = port;
             this.gameServer = new GameServer(port, description);
             gameServer.getServer().addConnectionListener(connectionListener);
