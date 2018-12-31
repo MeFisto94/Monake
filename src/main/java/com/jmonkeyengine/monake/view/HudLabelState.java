@@ -142,7 +142,7 @@ public class HudLabelState extends BaseAppState {
     private class LabelHolder {
         Entity entity;
         Label label;
-        float labelOffset = 0.1f;
+        float labelOffset = 0.3f;
         
         boolean visible;
         boolean isPlayerEntity;        
