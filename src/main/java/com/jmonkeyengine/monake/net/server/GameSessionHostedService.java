@@ -221,21 +221,21 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
         private GameSessionListener callback;
         private EntityId playerEntity;
         private EntityId characterEntity;
-        private ShipDriver shipDriver;
+        private ShipDriver characterDriver;
         
         public GameSessionImpl( EntityId playerEntity, HostedConnection conn ) {
             this.playerEntity = playerEntity;
             this.conn = conn;
             
             // Create a ship for the player
-            this.shipDriver = new ShipDriver();
+            this.characterDriver = new ShipDriver();
             
             this.characterEntity = GameEntities.createCharacter(playerEntity, ed);
             
             // Set the ship driver directly on the Body.  This could
             // also have been managed with a component-based system but 
             // that will wait.
-            physics.setControlDriver(characterEntity, shipDriver);
+            physics.setControlDriver(characterEntity, characterDriver);
             
             // Set the position when we want the ship to actually appear
             // in space 'for real'.
@@ -268,13 +268,13 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
         }
         
         @Override   
-        public void move( Quaternion rotation, Vector3f thrust ) {
+        public void move( Quaternion rotation, Vector3f thrust, boolean jumping ) {
             if( log.isTraceEnabled() ) {
-                log.trace("move(" + rotation + ", " + thrust + ")");
+                log.trace("move(" + rotation + ", " + thrust + ", " + jumping + " )");
             }
-            
+
             // Need to forward this to the game world
-            shipDriver.applyMovementState(rotation, thrust);
+            characterDriver.applyMovementState(rotation, thrust);
         }
         
         protected GameSessionListener getCallback() {

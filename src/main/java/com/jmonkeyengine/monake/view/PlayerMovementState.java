@@ -74,7 +74,7 @@ public class PlayerMovementState extends BaseAppState
     private Quaternion cameraFacing = new Quaternion().fromAngles((float)pitch, (float)yaw, 0);
     private double forward;
     private double side;
-    private double elevation;
+    protected boolean jumping;
     private double speed = 3.0;
  
     private Vector3f thrust = new Vector3f(); // not a direction, just 3 values
@@ -146,7 +146,6 @@ public class PlayerMovementState extends BaseAppState
                                       PlayerMovementFunctions.F_Y_ROTATE,
                                       PlayerMovementFunctions.F_X_ROTATE,
                                       PlayerMovementFunctions.F_THRUST,
-                                      PlayerMovementFunctions.F_ELEVATE,
                                       PlayerMovementFunctions.F_STRAFE);
 
         // Only run mode is treated as a 'state' or a trinary value.
@@ -154,7 +153,8 @@ public class PlayerMovementState extends BaseAppState
         // Positive and Off.  See PlayerMovementFunctions for a description
         // of alternate ways this could have been done.
         inputMapper.addStateListener(this,
-                                     PlayerMovementFunctions.F_BOOST);
+                                     PlayerMovementFunctions.F_BOOST,
+                                     PlayerMovementFunctions.F_JUMP);
                                      
         // Grab the game session
         session = getState(ConnectionState.class).getService(GameSessionClientService.class);
@@ -178,10 +178,10 @@ public class PlayerMovementState extends BaseAppState
                                          PlayerMovementFunctions.F_Y_ROTATE,
                                          PlayerMovementFunctions.F_X_ROTATE,
                                          PlayerMovementFunctions.F_THRUST,
-                                         PlayerMovementFunctions.F_ELEVATE,
                                          PlayerMovementFunctions.F_STRAFE);
         inputMapper.removeStateListener(this,
-                                        PlayerMovementFunctions.F_BOOST);
+                                        PlayerMovementFunctions.F_BOOST,
+                                        PlayerMovementFunctions.F_JUMP);
     }
 
     @Override
@@ -250,10 +250,10 @@ public class PlayerMovementState extends BaseAppState
 
             // Z is forward
             thrust.x = (float)(side * speed);
-            thrust.y = (float)(elevation * speed); 
+            thrust.y = 0f;
             thrust.z = (float)(forward * speed);
-            
-            session.move(rot, thrust);
+
+            session.move(rot, thrust, jumping);
  
             // Only update the position/speed display 20 times a second
             //if( spatial != null ) {                
@@ -261,7 +261,8 @@ public class PlayerMovementState extends BaseAppState
             //}
         } 
 
-            if( spatial != null ) {                
+            if( spatial != null ) {
+                // This is only used for the DebugHudState and for nothing else.
                 updateShipLocation(spatial.getWorldTranslation());
             }
  
@@ -302,6 +303,8 @@ public class PlayerMovementState extends BaseAppState
             } else {
                 speed = 3;
             }
+        } else if (func == PlayerMovementFunctions.F_JUMP) {
+            jumping = b;
         }
     }
 
@@ -330,9 +333,6 @@ public class PlayerMovementState extends BaseAppState
             return;
         } else if( func == PlayerMovementFunctions.F_STRAFE ) {
             this.side = -value;
-            return;
-        } else if( func == PlayerMovementFunctions.F_ELEVATE ) {
-            this.elevation = value;
             return;
         } else {
             return;

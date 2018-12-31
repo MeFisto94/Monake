@@ -66,5 +66,5 @@ public interface GameSession {
      *  state is continuous, it doesn't need to be reliable.  
      */
     @Asynchronous(reliable=false)
-    public void move( Quaternion rotation, Vector3f thrust );   
+    public void move( Quaternion rotation, Vector3f thrust, boolean jumping);
 }

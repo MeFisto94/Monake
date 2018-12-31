@@ -55,9 +55,9 @@ public class PlayerMovementFunctions {
 
     public static final FunctionId F_THRUST = new FunctionId(G_MOVEMENT, "Thrust");
     public static final FunctionId F_STRAFE = new FunctionId(G_MOVEMENT, "Strafe");
-    public static final FunctionId F_ELEVATE = new FunctionId(G_MOVEMENT, "Elevate");
-    
+
     public static final FunctionId F_BOOST = new FunctionId(G_MOVEMENT, "Boost");
+    public static final FunctionId F_JUMP = new FunctionId(G_MOVEMENT, "Jump");
  
     /**
      *  We capture some input mappings in case they need
@@ -93,15 +93,6 @@ public class PlayerMovementFunctions {
             inputMapper.map(F_STRAFE, Axis.JOYSTICK_HAT_X);
         }
 
-        if( !inputMapper.hasMappings(F_ELEVATE) ) {
-            // Elevation only has key mappings but we still treat it like
-            // one "axis".
-            inputMapper.map(F_ELEVATE, KeyInput.KEY_Q);
-            inputMapper.map(F_ELEVATE, InputState.Negative, KeyInput.KEY_Z);
-            
-            inputMapper.map(F_ELEVATE, Axis.JOYSTICK_HAT_Y);
-        } 
-
         if( !inputMapper.hasMappings(F_X_ROTATE) ) {
             // For the mouse and joystick mappings, we remember the mapping object
             // in case we want to flip it or adjust its sensitivity later.  This
@@ -130,7 +121,7 @@ public class PlayerMovementFunctions {
         if( !inputMapper.hasMappings(F_BOOST) ) {
             // Here we give run its own function.  Note that it was also possible
             // to treat running like an axis used instead of MOVE by combining
-            // keys.  For com.jmonkeyengine.monake.example:
+            // keys.  For example:
             //   map(F_BOOST, KeyInput.KEY_LSHIFT, KeyInput.KEY_W )
             // Another approach would have been to set the 'scale' of the non-run
             // mapping to 0.5 or something and simply map SHIFT+W without the
@@ -146,6 +137,12 @@ public class PlayerMovementFunctions {
             // be treated as analog.  That means our joystick needs a run button also.       
             inputMapper.map(F_BOOST, KeyInput.KEY_LSHIFT);
             inputMapper.map(F_BOOST, Button.JOYSTICK_RIGHT1);
+        }
+
+        if ( !inputMapper.hasMappings(F_JUMP)) {
+            inputMapper.map(F_JUMP, KeyInput.KEY_SPACE);
+            // @TODO: Investigate Joytick Button
+            inputMapper.map(F_JUMP, Button.JOYSTICK_RIGHT2);
         }
     }
     
