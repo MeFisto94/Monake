@@ -178,6 +178,7 @@ public class ModelViewState extends BaseAppState {
 
         try {
             world = getApplication().getAssetManager().loadModel("Models/level.j3o");
+            world.setLocalTranslation(-20f, -2f, 16f); // ensure (0, 0, 0) is where the player spawns
         } catch (AssetNotFoundException anf) {
             // Show programmers art if assets not found
             world = new Geometry("World", new Box(64f, 0.5f, 64f));
