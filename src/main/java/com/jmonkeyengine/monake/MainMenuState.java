@@ -143,7 +143,7 @@ public class MainMenuState extends BaseAppState {
     protected void initialize( Application app ) {
         mainWindow = new Container();
  
-        Label title = mainWindow.addChild(new Label("SimEthereal Example 2"));
+        Label title = mainWindow.addChild(new Label("Monake             "));
         title.setFontSize(32);
         title.setInsets(new Insets3f(10, 10, 0, 10));
         Label subtitle = mainWindow.addChild(new Label("with Zay-ES"));

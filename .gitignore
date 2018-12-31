@@ -23,3 +23,6 @@ gradle-app.setting
 *.log
 logs
 /.nb-gradle/
+
+# Ignore krita image files
+*.kra

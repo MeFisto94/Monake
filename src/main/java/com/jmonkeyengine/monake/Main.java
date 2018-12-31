@@ -63,7 +63,7 @@ public class Main extends SimpleApplication {
     private Node logo;
 
     public static void main( String... args ) throws Exception {
-        System.out.println("SimEthereal Example 2");
+        System.out.println("Monake");
 
         // Make sure JUL logging goes to our log4j configuration
         LogAdapter.initialize();
@@ -79,8 +79,8 @@ public class Main extends SimpleApplication {
         settings.setHeight(720);
         settings.setVSync(true);
         
-        settings.load("SimEthereal Example 2");
-        settings.setTitle("SimEthereal Example 2");
+        settings.load("Monake");
+        settings.setTitle("Monake");
         settings.setSettingsDialogImage("/sim-eth-es-splash-512.png");
         settings.setUseJoysticks(true);
         /*
