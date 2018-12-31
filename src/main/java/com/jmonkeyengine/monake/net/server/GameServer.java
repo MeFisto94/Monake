@@ -59,6 +59,7 @@ import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
 import com.jmonkeyengine.monake.sim.BasicEnvironment;
 import com.jmonkeyengine.monake.sim.BodyPositionPublisher;
+import com.jmonkeyengine.monake.sim.CharFlags;
 import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
@@ -239,6 +240,7 @@ public class GameServer {
         Serializer.registerClass(HealthComponent.class, new FieldSerializer());
         Serializer.registerClass(EffectComponent.class, new FieldSerializer());
         Serializer.registerClass(IsPickupComponent.class, new FieldSerializer());
+        Serializer.registerClass(CharFlags.class, new FieldSerializer());
     }
 
     public Server getServer() {

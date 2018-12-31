@@ -46,6 +46,8 @@ import com.jme3.scene.Spatial;
 import com.jmonkeyengine.monake.ConnectionState;
 import com.jmonkeyengine.monake.net.GameSession;
 import com.jmonkeyengine.monake.net.client.GameSessionClientService;
+import com.jmonkeyengine.monake.sim.CharFlag;
+import com.jmonkeyengine.monake.sim.CharFlags;
 import com.simsilica.es.EntityId;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.core.VersionedHolder;
@@ -74,8 +76,7 @@ public class PlayerMovementState extends BaseAppState
     private Quaternion cameraFacing = new Quaternion().fromAngles((float)pitch, (float)yaw, 0);
     private double forward;
     private double side;
-    protected boolean jumping;
-    private double speed = 3.0;
+    protected CharFlags flags;
  
     private Vector3f thrust = new Vector3f(); // not a direction, just 3 values
     
@@ -90,6 +91,7 @@ public class PlayerMovementState extends BaseAppState
     private VersionedHolder<String> speedDisplay; 
 
     public PlayerMovementState() {
+        flags = new CharFlags();
     }
 
     public void setShipId( EntityId shipId ) {
@@ -249,11 +251,12 @@ public class PlayerMovementState extends BaseAppState
             Quaternion rot = camera.getRotation();
 
             // Z is forward
-            thrust.x = (float)(side * speed);
+            thrust.x = (float)(side);
             thrust.y = 0f;
-            thrust.z = (float)(forward * speed);
+            thrust.z = (float)(forward);
 
-            session.move(rot, thrust, jumping);
+            thrust.normalizeLocal();
+            session.move(rot, thrust, flags);
  
             // Only update the position/speed display 20 times a second
             //if( spatial != null ) {                
@@ -298,13 +301,9 @@ public class PlayerMovementState extends BaseAppState
         //...but I felt it was slightly less clear here.   
         boolean b = value == InputState.Positive;
         if( func == PlayerMovementFunctions.F_BOOST ) {
-            if( b ) {
-                speed = 10;
-            } else {
-                speed = 3;
-            }
+            flags.setFlag(CharFlag.SPRINTING, b);
         } else if (func == PlayerMovementFunctions.F_JUMP) {
-            jumping = b;
+            flags.setFlag(CharFlag.JUMPING, b);
         }
     }
 

@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.jmonkeyengine.monake.net.GameSession;
 import com.jmonkeyengine.monake.net.GameSessionListener;
+import com.jmonkeyengine.monake.sim.CharFlags;
 import org.slf4j.*;
 
 import com.jme3.math.Quaternion;
@@ -82,11 +83,11 @@ public class GameSessionClientService extends AbstractClientService
     }
     
     @Override
-    public void move( Quaternion dir, Vector3f thrust, boolean jumping ) {
+    public void move( Quaternion dir, Vector3f movementDir, CharFlags flags) {
         if( log.isTraceEnabled() ) {
-            log.trace("move(" + dir + ", " + thrust + ")");
+            log.trace("move(" + dir + ", " + movementDir + ")");
         }
-        getDelegate().move(dir, thrust, jumping);
+        getDelegate().move(dir, movementDir, flags);
     }
 
     private GameSession getDelegate() {

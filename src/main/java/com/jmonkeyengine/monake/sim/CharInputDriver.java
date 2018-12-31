@@ -60,12 +60,13 @@ public class CharInputDriver implements ControlDriver {
     private float[] angles = new float[3];
     
     private float upThreshold = 0.7f; // ~45 degrees
-    private float walkSpeed = 3;
+    protected static float walkSpeed = 3;
+    protected static float runSpeed = 10;
 
     // Input
     Quaternion rotation;
     Vector3f movement;
-    boolean jumpPressed;
+    CharFlags flags;
     
     private Vector3f groundVelocity = new Vector3f();
     private int groundContactCount = 0;
@@ -80,18 +81,13 @@ public class CharInputDriver implements ControlDriver {
         setCharPhysics(charPhysics);
         rotation = Quaternion.IDENTITY;
         movement = Vector3f.ZERO;
-        jumpPressed = false;
+        flags = new CharFlags();
     }
 
-    public void setInput(Quaternion rotation, Vector3f movement, boolean jumpPressed) {
+    public void setInput(Quaternion rotation, Vector3f movement, CharFlags flags) {
         this.rotation = rotation;
         this.movement = movement;
-        this.jumpPressed = jumpPressed;
-
-        // @TODO: Implement?
-        /*if (movement.lengthSquared() > xyz) {
-            kick("Speedhack detected");
-        }*/
+        this.flags = flags;
     }
     
     public void setCharPhysics( CharPhysics charPhysics ) {
@@ -199,9 +195,8 @@ public class CharInputDriver implements ControlDriver {
             body.setAngularVelocity(vTemp);
         }
 
-        // 3 if walking, 10 if running. With a controller, everything in between. And if multiple axis are pressed, up to 3 times that
-        float speedFromClient = movement.length();
-        Vector3f desiredVelocity = rotation.mult(movement.normalize()).multLocal(walkSpeed * speedFromClient);
+        float speed = flags.getFlag(CharFlag.SPRINTING) ? runSpeed : walkSpeed;
+        Vector3f desiredVelocity = rotation.mult(movement.setY(0f).normalize()).multLocal(speed);
         //System.out.println("groundVelocity:" + groundVelocity + "  desiredVelocity:" + desiredVelocity);
 
         // Our real desired velocity is relative to the movement of what we
@@ -229,7 +224,7 @@ public class CharInputDriver implements ControlDriver {
         body.applyCentralForce(force);        
  
         body.setPhysicsRotation(rotation);
-        if (jumpPressed) {
+        if (flags.getFlag(CharFlag.JUMPING)) {
             if( canJump && !isJumping ) {
                 System.out.println("-------------------JUMP!   vTemp.y:" + vTemp.y);
                 // Clear any downward momentum we might still have

@@ -257,14 +257,14 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
         }
         
         @Override   
-        public void move( Quaternion rotation, Vector3f thrust, boolean jumping ) {
+        public void move( Quaternion rotation, Vector3f thrust, CharFlags flags) {
             if( log.isTraceEnabled() ) {
-                log.trace("move(" + rotation + ", " + thrust + ", " + jumping + " )");
+                log.trace("move(" + rotation + ", " + thrust + ", " + flags.toString() + " )");
             }
 
             // Need to forward this to the game world
             //characterDriver.applyMovementState(rotation, thrust);
-            characterDriver.setInput(rotation, thrust, jumping);
+            characterDriver.setInput(rotation, thrust, flags);
         }
         
         protected GameSessionListener getCallback() {
