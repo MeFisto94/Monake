@@ -48,8 +48,6 @@ import com.jme3.network.service.rpc.RpcHostedService;
 import com.jmonkeyengine.monake.GameConstants;
 import com.jmonkeyengine.monake.SimpleErrorHandlingSystem;
 import com.jmonkeyengine.monake.bullet.*;
-import com.jmonkeyengine.monake.bullet.debug.DebugPhysicsListener;
-import com.jmonkeyengine.monake.bulletimpl.PositionPublisher;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.Position;
@@ -73,7 +71,6 @@ import com.simsilica.es.server.EntityDataHostedService;
 import com.simsilica.es.server.EntityUpdater;
 import com.simsilica.ethereal.EtherealHost;
 import com.simsilica.ethereal.NetworkStateListener;
-import com.simsilica.ethereal.TimeSource;
 import com.simsilica.sim.GameLoop;
 import com.simsilica.sim.GameSystemManager;
 import com.simsilica.sim.common.DecaySystem;
@@ -174,7 +171,7 @@ public class GameServer {
  
         // Add a system that will forward physics changes to the Ethereal 
         // zone manager       
-        systems.addSystem(new ZoneNetworkSystem(ethereal.getZones()));
+        systems.addSystem(new com.jmonkeyengine.monake.bulletimpl.ZoneNetworkSystem(ethereal.getZones()));
  
         // Setup our entity data and the hosting service
         DefaultEntityData ed = new DefaultEntityData();
@@ -213,10 +210,6 @@ public class GameServer {
             }
         });
 
-        // sets the Position() component in relation to recent physics events
-        PositionPublisher pp = new PositionPublisher();
-        bullet.addPhysicsObjectListener(pp);
-        systems.addSystem(pp);
         systems.register(BulletSystem.class, bullet);
 
         // Register some custom serializers

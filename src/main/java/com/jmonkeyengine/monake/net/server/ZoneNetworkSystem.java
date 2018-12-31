@@ -50,7 +50,9 @@ import com.jmonkeyengine.monake.sim.SimplePhysics;
  *  which in turn will package them up for the clients in an efficient way.
  *
  *  @author    Paul Speed
+ * @deprecated Use BulletImpl.ZoneNetworkSystem instead
  */
+@Deprecated
 public class ZoneNetworkSystem extends AbstractGameSystem {
     
     private ZoneManager zones;
