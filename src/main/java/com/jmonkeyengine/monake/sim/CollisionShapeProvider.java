@@ -1,6 +1,7 @@
 package com.jmonkeyengine.monake.sim;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.math.Vector3f;
 import com.jmonkeyengine.monake.bullet.CollisionShapes;
@@ -33,6 +34,8 @@ public class CollisionShapeProvider {
             return new BoxCollisionShape(new Vector3f(64f, 0.5f, 64f)); // See ModelViewState
         } else if (shapeInfo.getShapeId() == ShapeInfos.boxInfo(entityData).getShapeId()) {
             return new BoxCollisionShape(new Vector3f(1f, 1f, 1f));
+        } else if (shapeInfo.getShapeId() == ShapeInfos.playerInfo(entityData).getShapeId()) {
+            return new CapsuleCollisionShape(0.3f, 1.8f);
         }
 
         return null;

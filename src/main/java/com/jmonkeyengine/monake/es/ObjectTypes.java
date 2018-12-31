@@ -50,6 +50,7 @@ public class ObjectTypes {
     public static final String GRAV_SPHERE = "gravSphere";
     public static final String WORLD = "world";
     public static final String BOX = "box";
+    public static final String PLAYER = "player";
     
     public static ObjectType shipType( EntityData ed ) {
         return ObjectType.create(SHIP, ed);
@@ -65,5 +66,9 @@ public class ObjectTypes {
 
     public static ObjectType boxType(EntityData ed) {
         return ObjectType.create(BOX, ed);
+    }
+
+    public static ObjectType playerType(EntityData ed) {
+        return ObjectType.create(PLAYER, ed);
     }
 }

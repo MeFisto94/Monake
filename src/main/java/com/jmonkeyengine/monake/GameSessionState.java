@@ -37,7 +37,10 @@
 package com.jmonkeyengine.monake;
 
 import com.jme3.app.Application;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jmonkeyengine.monake.debug.TimeSequenceState;
 import com.jmonkeyengine.monake.net.GameSessionListener;
 import com.jmonkeyengine.monake.net.chat.ChatSessionListener;
@@ -146,6 +149,9 @@ public class GameSessionState extends CompositeAppState {
         // Maybe bad style, but we need to ensure characterId is here...
         // @TODO: Maybe add it to the above list and just place the access into the first update tick?
         addChild(new RealHudLabelState(), false);
+
+        ((Main)getApplication()).getRootNode().addLight(new DirectionalLight(Vector3f.UNIT_Y.negate()));
+        ((Main)getApplication()).getRootNode().addLight(new AmbientLight(ColorRGBA.White.mult(0.5f)));
     }
     
     @Override   

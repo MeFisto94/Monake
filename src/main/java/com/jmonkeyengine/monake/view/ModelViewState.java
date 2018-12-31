@@ -54,10 +54,7 @@ import com.jmonkeyengine.monake.GameSessionState;
 import com.jmonkeyengine.monake.Main;
 import com.jmonkeyengine.monake.TimeState;
 import com.jmonkeyengine.monake.es.*;
-import com.simsilica.es.Entity;
-import com.simsilica.es.EntityContainer;
-import com.simsilica.es.EntityData;
-import com.simsilica.es.EntityId;
+import com.simsilica.es.*;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.mathd.trans.PositionTransition;
 import com.simsilica.mathd.trans.TransitionBuffer;
@@ -223,6 +220,16 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
+    protected Spatial createPlayer(Entity entity) {
+        Spatial player = getApplication().getAssetManager().loadModel("Models/Jaime.j3o");
+        player.move(0f, -1f, 0f); // Prevent "flying"
+
+        Node result = new Node("Player: " + entity.getId());
+        result.attachChild(player);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
     protected Spatial createModel( Entity entity ) {
         // Check to see if one already exists
         Spatial result = modelIndex.get(entity.getId());
@@ -247,6 +254,10 @@ public class ModelViewState extends BaseAppState {
 
             case ObjectTypes.BOX:
                 result = createBox(entity);
+                break;
+
+            case ObjectTypes.PLAYER:
+                result = createPlayer(entity);
                 break;
 
             default:
