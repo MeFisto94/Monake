@@ -60,8 +60,8 @@ public class CharInputDriver implements ControlDriver {
     private float[] angles = new float[3];
     
     private float upThreshold = 0.7f; // ~45 degrees
-    protected static float walkSpeed = 3;
-    protected static float runSpeed = 10;
+    protected static final float walkSpeed = 5;
+    protected static final float runSpeed = 10;
 
     // Input
     Quaternion rotation;
@@ -195,8 +195,14 @@ public class CharInputDriver implements ControlDriver {
             body.setAngularVelocity(vTemp);
         }
 
-        float speed = flags.getFlag(CharFlag.SPRINTING) ? runSpeed : walkSpeed;
-        Vector3f desiredVelocity = rotation.mult(movement.setY(0f).normalize()).multLocal(speed);
+        final float speed = flags.getFlag(CharFlag.SPRINTING) ? runSpeed : walkSpeed;
+        Vector3f desiredVelocity =
+            rotation.mult(
+                movement.clone().setY(0f).normalizeLocal()
+            ) // transfer movement from local to world space.
+            .setY(0f).normalizeLocal().multLocal(speed);
+            // Then remove the y-component and re-normalize, so we have full speed on xz and then multiply with speed.
+
         //System.out.println("groundVelocity:" + groundVelocity + "  desiredVelocity:" + desiredVelocity);
 
         // Our real desired velocity is relative to the movement of what we
@@ -208,9 +214,12 @@ public class CharInputDriver implements ControlDriver {
         body.getLinearVelocity(vTemp);
         float verticalVelocity = vTemp.y - groundVelocity.y;
 
-        //System.out.println("current:" + vTemp + "  desired:" + desiredVelocity + "  delta:" + desiredVelocity.subtract(vTemp));
+        //@TODO: FIXME: HERE IS A BUG, FOR SOME REASON current != real movement speed! adjusting runSpeed influences this value
+        // even if you DONT SPRINT. Might be related to updating the physics position though? NOTE: In the meantime I think
+        // that the system/controller just can't settle with one speed perfectly, so fine tune or asking the lord at that point
+        // System.out.println("current:" + vTemp + "  desired:" + desiredVelocity + "  delta:" + desiredVelocity.subtract(vTemp));
 
-        // Calculate a force that will either break or accelerate in the
+        // Calculate a force that will either brake or accelerate in the
         // appropriate direction to achieve the desired velocity
         force.set(desiredVelocity).subtractLocal(vTemp);
         force.y = 0;
@@ -222,8 +231,8 @@ public class CharInputDriver implements ControlDriver {
             //System.out.println("   airForce:" + force + "  vTemp:" + vTemp);
         }
         body.applyCentralForce(force);        
- 
         body.setPhysicsRotation(rotation);
+
         if (flags.getFlag(CharFlag.JUMPING)) {
             if( canJump && !isJumping ) {
                 System.out.println("-------------------JUMP!   vTemp.y:" + vTemp.y);

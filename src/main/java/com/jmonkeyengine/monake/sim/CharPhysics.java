@@ -50,24 +50,24 @@ public class CharPhysics {
     /**
      *  Sets the gravity for the character.
      */
-    public Vector3f gravity = new Vector3f(0, -20, 0);
+    public Vector3f gravity = new Vector3f(0, -40, 0);
     
     /**
      *  Sets the acceleration force used for movement while in
      *  ground contact.
      */   
-    public float groundImpulse = 200;
+    public float groundImpulse = 2000;
     
     /**   
      *  Sets the acceleration force used for movement while NOT in
      *  ground contact.
      */   
-    public float airImpulse = 50;
+    public float airImpulse = 500;
     
     /**
      *  Sets the vertical jump velocity.
      */ 
-    public float jumpForce = 10;
+    public float jumpForce = 40;
     
     /**
      *  When true, releasing the jump button during a jump will
