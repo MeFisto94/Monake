@@ -26,3 +26,10 @@ logs
 
 # Ignore krita image files
 *.kra
+
+# Ignore Asset Source Files (Hello Copyright)
+/forbidden/
+
+# Ignore specific Asset Files (they do not belong in this repo)
+/assets/Models/level.j3o
+/assets/Textures/spruit_sunrise_4k.hdr
