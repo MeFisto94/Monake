@@ -53,7 +53,7 @@ public class BasicEnvironment extends AbstractGameSystem {
     protected void initialize() {
         this.ed = getSystem(EntityData.class);
         if( ed == null ) {
-            throw new RuntimeException("SimplePhysics system requires an EntityData object.");
+            throw new RuntimeException("Basic Environment system requires an EntityData object.");
         }
     }
     
@@ -63,19 +63,6 @@ public class BasicEnvironment extends AbstractGameSystem {
 
     @Override
     public void start() {
-    
-        // Create some built in objects
-        double spacing = 256;
-        double offset = -2 * spacing + spacing * 0.5; 
-        for( int x = 0; x < 4; x++ ) {
-            for( int y = 0; y < 4; y++ ) {
-                for( int z = 0; z < 4; z++ ) {
-                    Vec3d pos = new Vec3d(offset + x * spacing, offset + y * spacing, offset + z * spacing);
-                    GameEntities.createGravSphere(pos, 10, ed);
-                }
-            }
-        }
-
         // Load the Map here:
         GameEntities.createWorld(ed);
 
