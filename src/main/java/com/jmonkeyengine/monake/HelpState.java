@@ -47,6 +47,7 @@ import com.jme3.input.KeyNames;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
+import com.jmonkeyengine.monake.view.PlayerAbilityFunctions;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.input.FunctionId;
 import com.simsilica.lemur.input.InputMapper;
@@ -73,6 +74,7 @@ public class HelpState extends BaseAppState {
         new KeyHelp(PlayerMovementFunctions.F_THRUST, "Flies forward and back."),
         new KeyHelp(PlayerMovementFunctions.F_STRAFE, "Flies side to side."),
         new KeyHelp(PlayerMovementFunctions.F_JUMP, "Jumps"),
+        new KeyHelp(PlayerAbilityFunctions.F_SHOOT, "Shoot"),
         new KeyHelp(MainGameFunctions.F_COMMAND_CONSOLE, 
             "Opens the in-game chat bar.  Type chat messages",
             "and hit enter to send.",
@@ -82,7 +84,7 @@ public class HelpState extends BaseAppState {
         new KeyHelp("PrtScrn", "Takes a screen shot."),
         new KeyHelp("F5", "Toggles display stats."),
         new KeyHelp("F6", "Toggles rendering frame timings."),
-        new KeyHelp(MainGameFunctions.F_TIME_DEBUG, "Toggles network timing stats.") 
+        new KeyHelp(MainGameFunctions.F_TIME_DEBUG, "Toggles network timing stats.")
     };
 
     public HelpState() {

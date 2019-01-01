@@ -22,6 +22,10 @@ public class CharFlags {
         return (value & (1 << flag.ordinal())) != 0;
     }
 
+    public void clearFlags() {
+        value = 0;
+    }
+
     @Override
     public String toString() {
         String str = "CharFlags{";

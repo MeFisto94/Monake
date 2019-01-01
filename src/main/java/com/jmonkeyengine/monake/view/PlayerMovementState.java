@@ -83,7 +83,7 @@ public class PlayerMovementState extends BaseAppState
     private GameSession session;
 
     // For now we'll do this here but really we probably want a separate camera state
-    private EntityId shipId;
+    private EntityId characterId;
     private ModelViewState models;  
     
     private Vector3f lastPosition = new Vector3f();
@@ -94,12 +94,12 @@ public class PlayerMovementState extends BaseAppState
         flags = new CharFlags();
     }
 
-    public void setShipId( EntityId shipId ) {
-        this.shipId = shipId;
+    public void setCharacterId(EntityId characterId ) {
+        this.characterId = characterId;
     }
     
-    public EntityId getShipId() {
-        return shipId;
+    public EntityId getCharacterId() {
+        return characterId;
     }
     
     public void setPitch( double pitch ) {
@@ -156,7 +156,8 @@ public class PlayerMovementState extends BaseAppState
         // of alternate ways this could have been done.
         inputMapper.addStateListener(this,
                                      PlayerMovementFunctions.F_BOOST,
-                                     PlayerMovementFunctions.F_JUMP);
+                                     PlayerMovementFunctions.F_JUMP,
+                                     PlayerAbilityFunctions.F_SHOOT);
                                      
         // Grab the game session
         session = getState(ConnectionState.class).getService(GameSessionClientService.class);
@@ -183,7 +184,8 @@ public class PlayerMovementState extends BaseAppState
                                          PlayerMovementFunctions.F_STRAFE);
         inputMapper.removeStateListener(this,
                                         PlayerMovementFunctions.F_BOOST,
-                                        PlayerMovementFunctions.F_JUMP);
+                                        PlayerMovementFunctions.F_JUMP,
+                                        PlayerAbilityFunctions.F_SHOOT);
     }
 
     @Override
@@ -192,6 +194,7 @@ public class PlayerMovementState extends BaseAppState
     
         // Make sure our input group is enabled
         inputMapper.activateGroup(PlayerMovementFunctions.G_MOVEMENT);
+        inputMapper.activateGroup(PlayerAbilityFunctions.G_ABILITY);
         
         // And kill the cursor
         GuiGlobals.getInstance().setCursorEventsEnabled(false);
@@ -204,6 +207,7 @@ public class PlayerMovementState extends BaseAppState
     @Override
     protected void onDisable() {
         inputMapper.deactivateGroup(PlayerMovementFunctions.G_MOVEMENT);
+        inputMapper.deactivateGroup(PlayerAbilityFunctions.G_ABILITY);
         GuiGlobals.getInstance().setCursorEventsEnabled(true);        
     }
 
@@ -237,9 +241,8 @@ public class PlayerMovementState extends BaseAppState
      
     @Override
     public void update( float tpf ) {
-
         // Update the camera position from the ship spatial
-        Spatial spatial = models.getModel(shipId);
+        Spatial spatial = models.getModel(characterId);
         if( spatial != null ) {
             camera.setLocation(spatial.getWorldTranslation());
         }
@@ -257,6 +260,10 @@ public class PlayerMovementState extends BaseAppState
 
             thrust.normalizeLocal();
             session.move(rot, thrust, flags);
+            /* So that they are gone next frame. In theory we should always get release events, but you never know
+             * what might happen.
+             */
+            flags.clearFlags();
  
             // Only update the position/speed display 20 times a second
             //if( spatial != null ) {                
@@ -298,12 +305,14 @@ public class PlayerMovementState extends BaseAppState
         // Another option would have been to use the value
         // directly:
         //    speed = 3 + value.asNumber() * 5
-        //...but I felt it was slightly less clear here.   
+        //...but I felt it was slightly less clear here.
         boolean b = value == InputState.Positive;
         if( func == PlayerMovementFunctions.F_BOOST ) {
             flags.setFlag(CharFlag.SPRINTING, b);
         } else if (func == PlayerMovementFunctions.F_JUMP) {
             flags.setFlag(CharFlag.JUMPING, b);
+        } else if (func == PlayerAbilityFunctions.F_SHOOT) {
+            flags.setFlag(CharFlag.SHOOTING, b);
         }
     }
 

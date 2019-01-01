@@ -144,7 +144,7 @@ public class GameSessionState extends CompositeAppState {
         playerId = getState(ConnectionState.class).getService(GameSessionClientService.class).getPlayer();
         characterId = getState(ConnectionState.class).getService(GameSessionClientService.class).getShip();
         log.info("Player object:" + characterId);
-        us.setShipId(characterId);
+        us.setCharacterId(characterId);
 
         // Maybe bad style, but we need to ensure characterId is here...
         // @TODO: Maybe add it to the above list and just place the access into the first update tick?

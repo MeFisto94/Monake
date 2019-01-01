@@ -43,6 +43,7 @@ import com.jme3.app.StatsAppState;
 import com.jme3.app.state.ScreenshotAppState;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
+import com.jmonkeyengine.monake.view.PlayerAbilityFunctions;
 import com.jmonkeyengine.monake.view.PlayerMovementFunctions;
 import com.simsilica.event.EventBus;
 import com.simsilica.lemur.GuiGlobals;
@@ -124,6 +125,7 @@ public class Main extends SimpleApplication {
  
         MainGameFunctions.initializeDefaultMappings(globals.getInputMapper());
         PlayerMovementFunctions.initializeDefaultMappings(globals.getInputMapper());
+        PlayerAbilityFunctions.initializeDefaultMappings(globals.getInputMapper());
  
         // Since we've added the background spinning widget here, we'll        
         // also register events to enable/disable it.

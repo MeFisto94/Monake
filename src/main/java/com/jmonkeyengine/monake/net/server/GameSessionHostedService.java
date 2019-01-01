@@ -262,9 +262,12 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
                 log.trace("move(" + rotation + ", " + thrust + ", " + flags.toString() + " )");
             }
 
-            // Need to forward this to the game world
-            //characterDriver.applyMovementState(rotation, thrust);
             characterDriver.setInput(rotation, thrust, flags);
+
+            if (flags.getFlag(CharFlag.SHOOTING)) {
+                // Handle that.
+                System.out.println("BOOM!");
+            }
         }
         
         protected GameSessionListener getCallback() {
