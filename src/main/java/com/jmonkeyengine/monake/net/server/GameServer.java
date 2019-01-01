@@ -57,10 +57,7 @@ import com.jmonkeyengine.monake.es.components.EffectComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
-import com.jmonkeyengine.monake.sim.BasicEnvironment;
-import com.jmonkeyengine.monake.sim.BodyPositionPublisher;
-import com.jmonkeyengine.monake.sim.CharFlags;
-import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
+import com.jmonkeyengine.monake.sim.*;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
@@ -223,6 +220,8 @@ public class GameServer {
 
         // Some Errors aren't printed out so we listen for these events
         systems.addSystem(new SimpleErrorHandlingSystem());
+
+        systems.register(ShootingSystem.class, new ShootingSystem(ethereal.getTimeSource()));
 
         log.info("Initializing game systems...");
         // Initialize the game system manager to prepare to start later

@@ -67,4 +67,8 @@ public class HealthComponent implements EntityComponent {
     public String toString() {
         return "HealthComponent[health=" + health + "]";
     }
+
+    public boolean isDead() {
+        return health <= 0;
+    }
 }

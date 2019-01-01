@@ -225,11 +225,6 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
             // also have been managed with a component-based system but 
             // that will wait.
             gameSystems.get(BulletSystem.class, true).setControlDriver(characterEntity, characterDriver);
-            
-            // Set the position when we want the ship to actually appear
-            // in space 'for real'.
-            ed.setComponent(characterEntity, new Position(1, 1, 1));
-            System.out.println("Set position on:" + characterEntity);
         }
  
         public void initialize() {
@@ -265,8 +260,7 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
             characterDriver.setInput(rotation, thrust, flags);
 
             if (flags.getFlag(CharFlag.SHOOTING)) {
-                // Handle that.
-                System.out.println("BOOM!");
+                gameSystems.get(ShootingSystem.class, true).shoot(characterEntity);
             }
         }
         
