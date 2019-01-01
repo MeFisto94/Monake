@@ -101,7 +101,9 @@ public class ShootingSystem extends AbstractGameSystem {
             Geometry capsule = new Geometry(e.getId().toString(), new Cylinder(32, 32, capsuleShape.getRadius(), capsuleShape.getHeight()));
             capsule.setUserData("entityId", e.getId().getId());
             capsule.setUserData("player", true);
-            capsule.setLocalTranslation(bPos.getFrame(timeSource.getTime()).getPosition(timeSource.getTime()));
+            PositionTransition posTrans = bPos.getFrame(timeSource.getTime());
+            capsule.setLocalTranslation(posTrans.getPosition(timeSource.getTime()));
+            capsule.setLocalRotation(posTrans.getRotation(timeSource.getTime()));
             raycastNode.attachChild(capsule);
         }
 
