@@ -10,7 +10,7 @@ repositories {
     jcenter()
 }
 
-ext.jmeVersion = "3.2.2-beta1"
+ext.jmeVersion = "3.2.2-stable"
 
 project(":assets") {
     apply plugin: "java"
