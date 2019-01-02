@@ -73,9 +73,9 @@ public class RealHudLabelState extends BaseAppState {
     protected WatchedEntity playerStats;
 
     Container uiContainer;
-    Container portraitContainerContainer;
     Container portraitContainer;
-    Spatial portrait;
+    Node portrait;
+    Spatial portraitContent;
     Label lblHealth;
     Label lblArmor;
     Label lblAmmo;
@@ -107,40 +107,35 @@ public class RealHudLabelState extends BaseAppState {
         lblAmmo.setFontSize(128f);
         lblAmmo.setTextVAlignment(VAlignment.Center);
 
-        // @TODO: WHY THE HELL IS JAIME PLACED ABOVE THE BAR AND NOT BELOW?
-        portraitContainerContainer = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.Even, FillMode.None), "");
-        //portraitContainerContainer = new Container(new BoxLayout(Axis.X, FillMode.Even),"");
-        //portraitContainerContainer = new Container(new BorderLayout(), "");
-
+        portraitContainer = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.Even, FillMode.None), "");
         uiContainer.addChild(lblHealth, BorderLayout.Position.West);
-        uiContainer.addChild(portraitContainerContainer, BorderLayout.Position.Center);
+        uiContainer.addChild(portraitContainer, BorderLayout.Position.Center);
         uiContainer.addChild(lblAmmo, BorderLayout.Position.East);
 
         uiContainer.setPreferredSize(new Vector3f(app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
         uiContainer.setLocalTranslation(0f, 0.25f * app.getCamera().getHeight(), 0f);
         hudLabelRoot.attachChild(uiContainer);
 
-        portraitContainer = new Container("");
         //@TODO: Doesn't work, get a proper Border.
         //portraitContainer.setBorder(new QuadBackgroundComponent(ColorRGBA.Red));
-        portrait = app.getAssetManager().loadModel("Models/Jaime.j3o");
-        portrait.addLight(new DirectionalLight(Vector3f.UNIT_Z.negate()));
-        portrait.setLocalScale(100f); // world units to pixel
+        portraitContent = app.getAssetManager().loadModel("Models/Jaime.j3o");
+        portraitContent.addLight(new DirectionalLight(Vector3f.UNIT_Z.negate()));
+        portraitContent.setLocalScale(100f); // world units to pixel
+        /* Jaime starts at his feet, where lemur containers start in the upper left edge and grow downwards, so we have
+         * to move Jaime and not the container.
+         */
+        portraitContent.setLocalTranslation(50f, -150f, 0f);
+        animChannel = portraitContent.getControl(AnimControl.class).createChannel();
+        animChannel.setAnim("Wave");
+
+        portrait = new Node();
+        portrait.attachChild(portraitContent);
         portrait.addControl(new GuiControl(""));
         portrait.getControl(GuiControl.class).setPreferredSize(new Vector3f(
                 0.1f * app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
-        animChannel = portrait.getControl(AnimControl.class).createChannel();
-        animChannel.setAnim("Wave");
-        portraitContainer.addChild((Node)portrait);
 
-        portraitContainerContainer.addChild(lblArmor); //, BorderLayout.Position.West);
-        portraitContainerContainer.addChild(portraitContainer); // , BorderLayout.Position.Center);
-
-        // @TODO: WHY DOES ALL THIS RESCALING JUST NOT WORK?
-        // @TODO: Nothing of these translations work...
-        portrait.setLocalTranslation(0f, -200f, 0f);
-        //portraitContainer.setLocalTranslation(0f, +0.25f * app.getCamera().getHeight(), 0f);
-
+        portraitContainer.addChild(lblArmor); //, BorderLayout.Position.West);
+        portraitContainer.addChild(portrait); // , BorderLayout.Position.Center);
     }
 
     @Override
