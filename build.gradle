@@ -6,6 +6,7 @@ apply plugin: 'idea'
 mainClassName='com.jmonkeyengine.monake.Main'
 
 repositories {
+    maven { url 'https://jitpack.io' }
     mavenLocal()
     jcenter()
 }
@@ -28,19 +29,25 @@ project(":assets") {
 
 dependencies {
  
-    // Need at least basic JME
+    /*// Need at least basic JME
     compile("org.jmonkeyengine:jme3-core:$jmeVersion") {
         // For some reason if I don't do this then it picks up alpha4 instead
         // of beta2-SNAPSHOT.
         force = true
-    }
-    compile "org.jmonkeyengine:jme3-desktop:$jmeVersion"
+    }*/
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-core:fixGLTFPBR-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-desktop:fixGLTFPBR-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet:fixGLTFPBR-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet-native:fixGLTFPBR-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-lwjgl:fixGLTFPBR-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-networking:fixGLTFPBR-SNAPSHOT'
+    /*compile "org.jmonkeyengine:jme3-desktop:$jmeVersion"
     compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
     compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
     compile "org.jmonkeyengine:jme3-lwjgl:$jmeVersion"
     compile("org.jmonkeyengine:jme3-networking:$jmeVersion") {
         force = true;
-    }
+    }*/
  
     // We definitely want a UI
     compile "com.simsilica:lemur:1.9.1"

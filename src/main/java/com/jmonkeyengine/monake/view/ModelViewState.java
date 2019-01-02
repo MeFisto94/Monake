@@ -47,6 +47,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.SceneGraphVisitorAdapter;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
@@ -181,6 +182,15 @@ public class ModelViewState extends BaseAppState {
 
         try {
             world = getApplication().getAssetManager().loadModel("Models/level.j3o");
+            world.depthFirstTraversal(new SceneGraphVisitorAdapter() {
+                @Override
+                public void visit(Geometry geom) {
+                    super.visit(geom);
+                    if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
+                        geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                    }
+                }
+            });
         } catch (AssetNotFoundException anf) {
             // Show programmers art if assets not found
             world = new Geometry("World", new Box(64f, 0.5f, 64f));
