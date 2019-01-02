@@ -48,6 +48,7 @@ import com.jmonkeyengine.monake.net.GameSession;
 import com.jmonkeyengine.monake.net.client.GameSessionClientService;
 import com.jmonkeyengine.monake.sim.CharFlag;
 import com.jmonkeyengine.monake.sim.CharFlags;
+import com.jmonkeyengine.monake.sim.GameEntities;
 import com.simsilica.es.EntityId;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.core.VersionedHolder;
@@ -244,7 +245,7 @@ public class PlayerMovementState extends BaseAppState
         // Update the camera position from the ship spatial
         Spatial spatial = models.getModel(characterId);
         if( spatial != null ) {
-            camera.setLocation(spatial.getWorldTranslation());
+            camera.setLocation(spatial.getWorldTranslation().add(GameEntities.cameraOffset));
         }
             
         long time = System.nanoTime();

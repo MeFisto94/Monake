@@ -36,6 +36,7 @@
 
 package com.jmonkeyengine.monake.sim;
 
+import com.jme3.math.Vector3f;
 import com.jmonkeyengine.monake.bullet.Mass;
 import com.jmonkeyengine.monake.bullet.ShapeInfo;
 import com.jmonkeyengine.monake.bullet.SpawnPosition;
@@ -61,6 +62,8 @@ import com.simsilica.mathd.Vec3d;
  *  @author    Paul Speed
  */
 public class GameEntities {
+
+    public static final Vector3f cameraOffset = new Vector3f(0f, 1.75f, 0f);
 
     public static EntityId createCharacter(EntityId parent, EntityData ed ) {
         EntityId result = ed.createEntity();

@@ -1,17 +1,24 @@
 package com.jmonkeyengine.monake.sim;
 
+import com.jme3.app.Application;
 import com.jme3.asset.AssetNotFoundException;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Cylinder;
 import com.jmonkeyengine.monake.bullet.CollisionShapes;
 import com.jmonkeyengine.monake.bullet.ShapeInfo;
 import com.jmonkeyengine.monake.es.ShapeInfos;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
+import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
 
 /**
@@ -46,9 +53,21 @@ public class CollisionShapeProvider {
         } else if (shapeInfo.getShapeId() == ShapeInfos.boxInfo(entityData).getShapeId()) {
             return new BoxCollisionShape(new Vector3f(1f, 1f, 1f));
         } else if (shapeInfo.getShapeId() == ShapeInfos.playerInfo(entityData).getShapeId()) {
-            return new CapsuleCollisionShape(0.3f, 1.8f);
+            return new CapsuleCollisionShape(0.5f, 4f);
         }
 
         return null;
+    }
+
+    public static Geometry getPlayerCollisionShapeAsGeometry(Application app, EntityData ed, float playerYOffset) {
+        Geometry physicsCapsule = new Geometry("", new Cylinder(32, 32, 0.5f, 4f));
+        physicsCapsule.setLocalTranslation(0f, 4f / 2f + playerYOffset, 0f); // height / 2 -> origin = center of capsule, -1.2f because Jaime
+        physicsCapsule.setLocalRotation(new Quaternion(new float[] { FastMath.HALF_PI, 0f, 0f}));
+        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Pink);
+        mat.getAdditionalRenderState().setWireframe(true);
+        physicsCapsule.setMaterial(mat);
+
+        return physicsCapsule;
     }
 }

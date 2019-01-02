@@ -43,11 +43,13 @@ import com.jme3.asset.AssetNotFoundException;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Texture;
 import com.jmonkeyengine.monake.ConnectionState;
@@ -55,6 +57,7 @@ import com.jmonkeyengine.monake.GameSessionState;
 import com.jmonkeyengine.monake.Main;
 import com.jmonkeyengine.monake.TimeState;
 import com.jmonkeyengine.monake.es.*;
+import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
 import com.simsilica.es.*;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.mathd.trans.PositionTransition;
@@ -230,10 +233,12 @@ public class ModelViewState extends BaseAppState {
 
     protected Spatial createPlayer(Entity entity) {
         Spatial player = getApplication().getAssetManager().loadModel("Models/Jaime.j3o");
-        player.move(0f, -1f, 0f); // Prevent "flying"
+        player.move(0f, -1.2f, 0f); // Prevent "flying"
+        player.setLocalScale(3f);
 
         Node result = new Node("Player: " + entity.getId());
         result.attachChild(player);
+        result.attachChild(CollisionShapeProvider.getPlayerCollisionShapeAsGeometry(getApplication(), ed, -1.2f));
         result.setUserData("entityId", entity.getId().getId());
         return result;
     }

@@ -98,17 +98,22 @@ public class ShootingSystem extends AbstractGameSystem {
             BodyPosition bPos = e.get(BodyPosition.class);
             bPos.initialize(e.getId(), 12);
 
-            Geometry capsule = new Geometry(e.getId().toString(), new Cylinder(32, 32, capsuleShape.getRadius(), capsuleShape.getHeight()));
+            //Geometry capsule = new Geometry(e.getId().toString(), new Cylinder(32, 32, capsuleShape.getRadius(), capsuleShape.getHeight()));
+            Geometry capsule = CollisionShapeProvider.getPlayerCollisionShapeAsGeometry(ServerApplication.self, ed, -1.2f);
+            capsule.setName(e.getId().toString());
             capsule.setUserData("entityId", e.getId().getId());
             capsule.setUserData("player", true);
+
             PositionTransition posTrans = bPos.getFrame(timeSource.getTime());
-            capsule.setLocalTranslation(posTrans.getPosition(timeSource.getTime()));
-            capsule.setLocalRotation(posTrans.getRotation(timeSource.getTime()));
+
+            // Hoping this is accurate
+            capsule.setLocalTranslation(capsule.getLocalTranslation().add(posTrans.getPosition(timeSource.getTime())));
+            capsule.setLocalRotation(posTrans.getRotation(timeSource.getTime()).mult(capsule.getLocalRotation()));
             raycastNode.attachChild(capsule);
         }
 
         PositionTransition posTrans = bodyPos.getFrame(timeSource.getTime());
-        Ray shootingRay = new Ray(posTrans.getPosition(timeSource.getTime()), posTrans.getRotation(timeSource.getTime()).mult(Vector3f.UNIT_Z));
+        Ray shootingRay = new Ray(posTrans.getPosition(timeSource.getTime()).add(GameEntities.cameraOffset), posTrans.getRotation(timeSource.getTime()).mult(Vector3f.UNIT_Z));
         // @TODO: Weapon Range? shootingRay.setLimit(50);
 
         CollisionResults cr = new CollisionResults();
