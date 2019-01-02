@@ -189,7 +189,8 @@ public class ModelViewState extends BaseAppState {
                 public void visit(Geometry geom) {
                 super.visit(geom);
                 if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
-                    geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                    //geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                    geom.getMaterial().setBoolean("UseBrokenGLTFExporter", true);
                 }
 
                 for (Light light : geom.getLocalLightList()){

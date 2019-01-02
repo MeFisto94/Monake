@@ -35,12 +35,16 @@ dependencies {
         // of beta2-SNAPSHOT.
         force = true
     }*/
-    compile 'com.github.MeFisto94.jmonkeyengine:jme3-core:fixGLTFPBR-SNAPSHOT'
-    compile 'com.github.MeFisto94.jmonkeyengine:jme3-desktop:fixGLTFPBR-SNAPSHOT'
-    compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet:fixGLTFPBR-SNAPSHOT'
-    compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet-native:fixGLTFPBR-SNAPSHOT'
-    compile 'com.github.MeFisto94.jmonkeyengine:jme3-lwjgl:fixGLTFPBR-SNAPSHOT'
-    compile 'com.github.MeFisto94.jmonkeyengine:jme3-networking:fixGLTFPBR-SNAPSHOT'
+
+    // You need that to trigger a new build at jitpack:
+    // implementation 'com.github.MeFisto94:jMonkeyEngine:fix-gltf-exporter-bug-SNAPSHOT'
+
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-core:fix-gltf-exporter-bug-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-desktop:fix-gltf-exporter-bug-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet:fix-gltf-exporter-bug-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet-native:fix-gltf-exporter-bug-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-lwjgl:fix-gltf-exporter-bug-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-networking:fix-gltf-exporter-bug-SNAPSHOT'
     /*compile "org.jmonkeyengine:jme3-desktop:$jmeVersion"
     compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
     compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
