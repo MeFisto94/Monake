@@ -40,6 +40,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.AssetNotFoundException;
+import com.jme3.light.Light;
+import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -185,10 +187,16 @@ public class ModelViewState extends BaseAppState {
             world.depthFirstTraversal(new SceneGraphVisitorAdapter() {
                 @Override
                 public void visit(Geometry geom) {
-                    super.visit(geom);
-                    if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
-                        geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                super.visit(geom);
+                if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
+                    geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                }
+
+                for (Light light : geom.getLocalLightList()){
+                    if (light instanceof PointLight){
+                        light.setColor(light.getColor().mult(5));
                     }
+                }
                 }
             });
         } catch (AssetNotFoundException anf) {
