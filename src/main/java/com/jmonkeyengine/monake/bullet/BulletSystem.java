@@ -98,7 +98,7 @@ public class BulletSystem extends AbstractGameSystem {
     public BulletSystem() {
     }
 
-public PhysicsSpace getSpace() {
+    public PhysicsSpace getSpace() {
     return pSpace;
 }
 

@@ -213,10 +213,6 @@ public class CharInputDriver implements ControlDriver {
         // desired velocity
         body.getLinearVelocity(vTemp);
         float verticalVelocity = vTemp.y - groundVelocity.y;
-
-        //@TODO: FIXME: HERE IS A BUG, FOR SOME REASON current != real movement speed! adjusting runSpeed influences this value
-        // even if you DONT SPRINT. Might be related to updating the physics position though? NOTE: In the meantime I think
-        // that the system/controller just can't settle with one speed perfectly, so fine tune or asking the lord at that point
         // System.out.println("current:" + vTemp + "  desired:" + desiredVelocity + "  delta:" + desiredVelocity.subtract(vTemp));
 
         // Calculate a force that will either brake or accelerate in the
@@ -235,7 +231,7 @@ public class CharInputDriver implements ControlDriver {
 
         if (flags.getFlag(CharFlag.JUMPING)) {
             if( canJump && !isJumping ) {
-                System.out.println("-------------------JUMP!   vTemp.y:" + vTemp.y);
+                //System.out.println("-------------------JUMP!   vTemp.y:" + vTemp.y);
                 // Clear any downward momentum we might still have
                 vTemp.y = groundVelocity.y;                        
                 vTemp.addLocal(0, getCharPhysics().jumpForce, 0);
@@ -246,7 +242,7 @@ public class CharInputDriver implements ControlDriver {
             // If the player releases early and we allow short jumps
             // then kill some of the momentum
             if(getCharPhysics().shortJumps && isJumping && verticalVelocity > 0 ) {
-                System.out.println("---------------KILL JUMP!");
+                //System.out.println("---------------KILL JUMP!");
                 // Then for 'short jumps' support we should 
                 // set a maximum upward velocity
                 vTemp.y = Math.min(vTemp.y, groundVelocity.y + 2);
@@ -263,7 +259,7 @@ public class CharInputDriver implements ControlDriver {
         // soon.
         if(getCharPhysics().autoBounce && isJumping && (vTemp.y - groundVelocity.y < 0) ) {
             isJumping = false;
-            System.out.println("---------------Jump done, falling.");
+            //System.out.println("---------------Jump done, falling.");
         }
            
         // Get ready for the next set of collision events       
