@@ -261,10 +261,6 @@ public class PlayerMovementState extends BaseAppState
 
             thrust.normalizeLocal();
             session.move(rot, thrust, flags);
-            /* So that they are gone next frame. In theory we should always get release events, but you never know
-             * what might happen.
-             */
-            flags.clearFlags();
  
             // Only update the position/speed display 20 times a second
             //if( spatial != null ) {                

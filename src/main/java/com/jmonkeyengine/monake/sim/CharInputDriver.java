@@ -60,8 +60,8 @@ public class CharInputDriver implements ControlDriver {
     private float[] angles = new float[3];
     
     private float upThreshold = 0.7f; // ~45 degrees
-    protected static final float walkSpeed = 5;
-    protected static final float runSpeed = 10;
+    protected static final float walkSpeed = 15;
+    protected static final float runSpeed = 30;
 
     // Input
     Quaternion rotation;

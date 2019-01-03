@@ -280,7 +280,7 @@ public PhysicsSpace getSpace() {
                 b.getControlDriver().update(time, b);
             }
          
-            pSpace.update(t);        
+            pSpace.update(1/60f, 0);
             pSpace.distributeEvents();
             
             for( EntityPhysicsObject o : mobs.getArray() ) {

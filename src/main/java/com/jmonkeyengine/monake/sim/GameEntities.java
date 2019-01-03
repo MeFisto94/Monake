@@ -69,7 +69,7 @@ public class GameEntities {
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);
-        ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(20f, 2f, -16f),
+        ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(29.5f, 20f, -30.4f),
                 ShapeInfos.playerInfo(ed));
         ed.setComponents(result, new HealthComponent(100), new ArmorComponent(0));
         return result;
