@@ -37,6 +37,7 @@
 package com.jmonkeyengine.monake.sim;
 
 import com.jme3.math.Vector3f;
+import com.jmonkeyengine.monake.bullet.Ghost;
 import com.jmonkeyengine.monake.bullet.Mass;
 import com.jmonkeyengine.monake.bullet.ShapeInfo;
 import com.jmonkeyengine.monake.bullet.SpawnPosition;
@@ -101,6 +102,14 @@ public class GameEntities {
         EntityId result = ed.createEntity();
         ed.setComponents(result, ObjectTypes.boxType(ed), new SpawnPosition(xOffset, 500f, 0f),
                 new Mass(1), ShapeInfos.boxInfo(ed));
+        return result;
+    }
+
+    public static EntityId createHealthPickup(EntityData ed, Vector3f position) {
+        EntityId result = ed.createEntity();
+        // @TODO: Why does it disappear when Ghost is set?
+        ed.setComponents(result, ObjectTypes.pickupHealthType(ed), new SpawnPosition(position),
+                new Position(position.x, position.y, position.z), ShapeInfos.boxInfo(ed), new Mass(0), new Ghost(Ghost.COLLIDE_DYNAMIC));
         return result;
     }
 }

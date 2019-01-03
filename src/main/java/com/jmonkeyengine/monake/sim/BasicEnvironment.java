@@ -36,6 +36,7 @@
 
 package com.jmonkeyengine.monake.sim;
 
+import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityData;
 import com.simsilica.mathd.Vec3d;
 import com.simsilica.sim.AbstractGameSystem;
@@ -69,6 +70,8 @@ public class BasicEnvironment extends AbstractGameSystem {
         for (int i = 0; i < 3; i++) {
             GameEntities.createBox(ed, i * 5);
         }
+
+        GameEntities.createHealthPickup(ed, new Vector3f(30f, 4f, -40f));
     }
     
     @Override

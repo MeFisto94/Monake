@@ -149,7 +149,7 @@ public class BulletSystem extends AbstractGameSystem {
 
     /**
      *  Adds a collision listener that will be notified collisions between entity-backed physical
-     *  objects and other physics bodies (whether entity-base dor not).
+     *  objects and other physics bodies (whether entity-based or not).
      *  Note: this method is not thread safe and should only be called by the simulation
      *  thread once the game manager has been started. 
      */

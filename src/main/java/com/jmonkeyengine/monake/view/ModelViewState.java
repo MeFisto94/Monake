@@ -285,6 +285,7 @@ public class ModelViewState extends BaseAppState {
                 break;
 
             case ObjectTypes.BOX:
+            case ObjectTypes.PICKUP_HEALTH:
                 result = createBox(entity);
                 break;
 

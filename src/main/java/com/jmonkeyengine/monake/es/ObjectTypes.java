@@ -51,6 +51,7 @@ public class ObjectTypes {
     public static final String WORLD = "world";
     public static final String BOX = "box";
     public static final String PLAYER = "player";
+    public static final String PICKUP_HEALTH = "pickupHealth";
     
     public static ObjectType shipType( EntityData ed ) {
         return ObjectType.create(SHIP, ed);
@@ -66,6 +67,10 @@ public class ObjectTypes {
 
     public static ObjectType boxType(EntityData ed) {
         return ObjectType.create(BOX, ed);
+    }
+
+    public static ObjectType pickupHealthType(EntityData ed) {
+        return ObjectType.create(PICKUP_HEALTH, ed);
     }
 
     public static ObjectType playerType(EntityData ed) {

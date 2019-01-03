@@ -223,6 +223,8 @@ public class GameServer {
 
         systems.register(ShootingSystem.class, new ShootingSystem(ethereal.getTimeSource()));
 
+        systems.addSystem(new PickupSystem());
+
         log.info("Initializing game systems...");
         // Initialize the game system manager to prepare to start later
         systems.initialize();
