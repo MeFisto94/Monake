@@ -33,7 +33,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmonkeyengine.monake;
 
 import com.jme3.app.BasicProfilerState;
@@ -54,32 +53,32 @@ import com.simsilica.state.DebugHudState;
 import com.simsilica.util.LogAdapter;
 
 /**
- *  The main bootstrap class for the SimEthereal networking com.jmonkeyengine.monake.example
- *  game. 
+ * The main bootstrap class for the SimEthereal networking
+ * com.jmonkeyengine.monake.example game.
  *
- *  @author    Paul Speed
+ * @author Paul Speed
  */
 public class Main extends SimpleApplication {
 
     private Node logo;
 
-    public static void main( String... args ) throws Exception {
+    public static void main(String... args) throws Exception {
         System.out.println("Monake");
 
         // Make sure JUL logging goes to our log4j configuration
         LogAdapter.initialize();
-        
+
         Main main = new Main();
-        
+
         AppSettings settings = new AppSettings(true);
- 
+
         // Set some defaults that will get overwritten if
         // there were previously saved settings from the last time the user
         // ran.       
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setVSync(true);
-        
+
         settings.load("Monake");
         settings.setTitle("Monake");
         settings.setSettingsDialogImage("/sim-eth-es-splash-512.png");
@@ -94,61 +93,61 @@ public class Main extends SimpleApplication {
             settings.setIcons(icons);
         } catch( IOException e ) {
             log.warn( "Error loading globe icons", e );
-        }*/        
-        
+        }*/
+
         main.setSettings(settings);
-        
+
         main.start();
     }
 
     public Main() {
         super(new StatsAppState(), new DebugKeysAppState(), new BasicProfilerState(false),
-              new AnimationState(), // from Lemur
-              new OptionPanelState(), // from Lemur
-              new DebugHudState(), // SiO2 utility class
-              new SiliconDioxideState(),
-              new MainMenuState(),
-              new ScreenshotAppState("", System.currentTimeMillis())); 
+                new AnimationState(), // from Lemur
+                new OptionPanelState(), // from Lemur
+                new DebugHudState(), // SiO2 utility class
+                new SiliconDioxideState(),
+                new MainMenuState(),
+                new ScreenshotAppState("", System.currentTimeMillis()));
     }
-        
-    public void simpleInitApp() {        
-        
+
+    public void simpleInitApp() {
+
         setPauseOnLostFocus(false);
         setDisplayFps(false);
         setDisplayStatView(false);
-        
+
         GuiGlobals.initialize(this);
- 
+
         GuiGlobals globals = GuiGlobals.getInstance();
-        BaseStyles.loadGlassStyle();
-        globals.getStyles().setDefaultStyle("glass");
- 
+        BaseStyles.loadStyleResources("/Interface/monake-style.groovy");
+        BaseStyles.loadStyleResources("/Interface/quake-style.groovy");
+        GuiGlobals.getInstance().getStyles().setDefaultStyle("monake");
+
         MainGameFunctions.initializeDefaultMappings(globals.getInputMapper());
         PlayerMovementFunctions.initializeDefaultMappings(globals.getInputMapper());
         PlayerAbilityFunctions.initializeDefaultMappings(globals.getInputMapper());
- 
+
         // Since we've added the background spinning widget here, we'll        
         // also register events to enable/disable it.
-        EventBus.addListener(new GameListener(), 
-                             GameSessionEvent.sessionStarted,
-                             GameSessionEvent.sessionEnded);
- 
+        EventBus.addListener(new GameListener(),
+                GameSessionEvent.sessionStarted,
+                GameSessionEvent.sessionEnded);
+
         // Get rid of the default close mapping in InputManager
-        if( inputManager.hasMapping(INPUT_MAPPING_EXIT) ) {
+        if (inputManager.hasMapping(INPUT_MAPPING_EXIT)) {
             inputManager.deleteMapping(INPUT_MAPPING_EXIT);
         }
-                       
+
     }
-    
+
     private class GameListener {
-        public void sessionStarted( GameSessionEvent event ) {
+
+        public void sessionStarted(GameSessionEvent event) {
             stateManager.getState(SiliconDioxideState.class).setEnabled(false);
         }
-        
-        public void sessionEnded( GameSessionEvent event ) {
+
+        public void sessionEnded(GameSessionEvent event) {
             stateManager.getState(SiliconDioxideState.class).setEnabled(true);
         }
     }
 }
-
-

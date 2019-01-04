@@ -89,11 +89,11 @@ public class RealHudLabelState extends BaseAppState {
         hudLabelRoot = new Node("HUD labels");
         this.ed = getState(ConnectionState.class).getEntityData();
 
-        uiContainer = new Container(new BorderLayout(), new ElementId("hud.container"));
-        lblAmmo = new Label("1337", new ElementId("ammo.hud.label"));
-        lblArmor = new Label("9000", new ElementId("armor.hud.label"));
-        lblHealth = new Label("42", new ElementId("health.hud.label"));
-
+        uiContainer = new Container(new BorderLayout(), new ElementId("hud.container"), "quake");
+        lblAmmo = new Label("1337", new ElementId("ammo.hud.label"), "quake");
+        lblArmor = new Label("9000", new ElementId("armor.hud.label"), "quake");
+        lblHealth = new Label("42", new ElementId("health.hud.label"), "quake");
+        
         lblHealth.setColor(ColorRGBA.Red);
         lblHealth.setFontSize(128f);
         lblHealth.setTextVAlignment(VAlignment.Center);
