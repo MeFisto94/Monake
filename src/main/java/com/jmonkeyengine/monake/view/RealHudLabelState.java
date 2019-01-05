@@ -115,7 +115,9 @@ public class RealHudLabelState extends BaseAppState {
         uiContainer.setPreferredSize(new Vector3f(app.getCamera().getWidth(), 0.25f * app.getCamera().getHeight(), 0f));
         uiContainer.setLocalTranslation(0f, 0.25f * app.getCamera().getHeight(), 0f);
         hudLabelRoot.attachChild(uiContainer);
-
+        hudLabelRoot.setLocalScale(0.5f);
+        hudLabelRoot.move(300f,0,0);
+        
         //@TODO: Doesn't work, get a proper Border.
         //portraitContainer.setBorder(new QuadBackgroundComponent(ColorRGBA.Red));
         portraitContent = app.getAssetManager().loadModel("Models/Jaime.j3o");
