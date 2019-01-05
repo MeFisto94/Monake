@@ -14,13 +14,16 @@ import com.jme3.scene.Spatial;
 import com.jmonkeyengine.monake.bullet.*;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
+import com.jmonkeyengine.monake.es.ObjectTypes;
 import com.jmonkeyengine.monake.es.ShapeInfos;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
+import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
+import com.simsilica.es.filter.FieldFilter;
 import com.simsilica.ethereal.TimeSource;
 import com.simsilica.mathd.trans.PositionTransition;
 import com.simsilica.sim.AbstractGameSystem;
@@ -32,6 +35,7 @@ public class PickupSystem extends AbstractGameSystem implements EntityCollisionL
     static Logger log = LoggerFactory.getLogger(PickupSystem.class);
     EntityData ed;
     EntitySet healthSet;
+    EntitySet playerSet;
 
     public PickupSystem() {
     }
@@ -45,7 +49,9 @@ public class PickupSystem extends AbstractGameSystem implements EntityCollisionL
 
         getSystem(BulletSystem.class).addEntityCollisionListener(this);
 
-        healthSet = ed.getEntities(ObjectType.class, BodyPosition.class, Ghost.class, HealthComponent.class);
+        healthSet = ed.getEntities(ObjectType.class, Ghost.class, HealthComponent.class, IsPickupComponent.class);
+        playerSet = ed.getEntities(new FieldFilter(ObjectType.class, "type", ObjectTypes.playerType(ed).getType()),
+                ObjectType.class, HealthComponent.class);
         //healthSet = ed.getEntities(ObjectType.class, BodyPosition.class, Ghost.class, HealthComponent.class);
         //healthSet = ed.getEntities(ObjectType.class, BodyPosition.class, Ghost.class, HealthComponent.class);
     }
@@ -53,12 +59,15 @@ public class PickupSystem extends AbstractGameSystem implements EntityCollisionL
     @Override
     protected void terminate() {
         healthSet.release();
+        playerSet.release();
+        getSystem(BulletSystem.class).removeEntityCollisionListener(this);
     }
 
     @Override
     public void update(SimTime time) {
         super.update(time);
         healthSet.applyChanges();
+        playerSet.applyChanges();
     }
 
     @Override
@@ -76,10 +85,20 @@ public class PickupSystem extends AbstractGameSystem implements EntityCollisionL
             return; // Skip event, not sure what happened
         }
 
-        if (healthSet.containsId(ghost.getId())) {
+        if (healthSet.containsId(ghost.getId()) && playerSet.containsId(player.getId())) {
             Entity eHealth = healthSet.getEntity(ghost.getId());
-            HealthComponent health = eHealth.get(HealthComponent.class);
-            System.out.println("Got Health: " + health.getHealth());
+            HealthComponent healthBoost = eHealth.get(HealthComponent.class);
+            HealthComponent playerHealth = playerSet.getEntity(player.getId()).get(HealthComponent.class);
+
+            if (playerHealth.isDead()) {
+                return;
+            }
+
+            int newHealth = Math.max(200, playerHealth.getHealth() + healthBoost.getHealth());
+            System.out.println("Healing for " + newHealth);
+            ed.setComponent(player.getId(), new HealthComponent(newHealth));
+            ed.removeEntity(ghost.getId());
+            // @TODO: Reschedule for Respawn Timer
         }
     }
 }

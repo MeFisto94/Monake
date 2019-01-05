@@ -38,10 +38,7 @@ package com.jmonkeyengine.monake.sim;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jmonkeyengine.monake.bullet.BulletSystem;
-import com.jmonkeyengine.monake.bullet.EntityPhysicsObject;
-import com.jmonkeyengine.monake.bullet.EntityRigidBody;
-import com.jmonkeyengine.monake.bullet.PhysicsObjectListener;
+import com.jmonkeyengine.monake.bullet.*;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.Position;
 import com.simsilica.es.EntityData;
@@ -105,6 +102,11 @@ public class BodyPositionPublisher extends AbstractGameSystem
             return;
         }
 
+        // Ghosts don't need to be here either when they don't have a parent because then they will never move.
+        if (object instanceof EntityGhostObject && ((EntityGhostObject) object).getParent() == null) {
+            return;
+        }
+
         // The server side needs hardly any backlog.  We'll use 3 just in case
         // but 2 (even possibly 1) should be fine.  If we ever need to rewind
         // for shot resolution then we can increase the backlog as necessary
@@ -129,7 +131,11 @@ public class BodyPositionPublisher extends AbstractGameSystem
         Quaternion orient = object.getPhysicsRotation(null);
 
         //if( body.getMass() == 0 ) {
-        if( object instanceof EntityRigidBody && ((EntityRigidBody)object).getMass() == 0 ) {
+        if (
+                (object instanceof EntityRigidBody && ((EntityRigidBody)object).getMass() == 0)
+            ||
+                (object instanceof EntityGhostObject && ((EntityGhostObject) object).getParent() == null)
+        ){
             // It's a static object so use standard Position publishing
             //System.out.println("update(" + object + ")");
             Position pos = new Position(loc, orient);
@@ -140,6 +146,7 @@ public class BodyPositionPublisher extends AbstractGameSystem
             //System.out.println("updateMob(" + body + ") loc:" + loc);
             // Grab it's buffer which we are guaranteed to have because we set it in
             // added()
+
             BodyPosition pos = ed.getComponent(object.getId(), BodyPosition.class);
             pos.addFrame(time.getTime(), loc, orient, true);
         }

@@ -45,6 +45,7 @@ import com.jmonkeyengine.monake.es.*;
 import com.jmonkeyengine.monake.es.components.AmmoComponent;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
+import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
@@ -82,14 +83,6 @@ public class GameEntities {
         ed.setComponent(result, new AmmoComponent(64));
         return result;
     }
-    
-    public static EntityId createGravSphere( Vec3d pos, double radius, EntityData ed ) {
-        EntityId result = ed.createEntity();
-        ed.setComponents(result, ObjectTypes.gravSphereType(ed), 
-                         new Position(pos, new Quatd().fromAngles(-Math.PI * 0.5, 0, 0)),
-                         new SphereShape(radius, new Vec3d()));
-        return result;         
-    }
 
     public static EntityId createWorld(EntityData ed) {
         EntityId result = ed.createEntity();
@@ -107,9 +100,9 @@ public class GameEntities {
 
     public static EntityId createHealthPickup(EntityData ed, Vector3f position) {
         EntityId result = ed.createEntity();
-        // @TODO: Why does it disappear when Ghost is set?
         ed.setComponents(result, ObjectTypes.pickupHealthType(ed), new SpawnPosition(position),
-                new Position(position.x, position.y, position.z), ShapeInfos.boxInfo(ed), new Mass(0), new Ghost(Ghost.COLLIDE_DYNAMIC));
+                new HealthComponent(100), ShapeInfos.boxInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
+                new IsPickupComponent());
         return result;
     }
 }
