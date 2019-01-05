@@ -33,7 +33,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmonkeyengine.monake.view;
 
 import com.jme3.app.Application;
@@ -72,9 +71,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  Displays the models for the various physics objects.
+ * Displays the models for the various physics objects.
  *
- *  @author    Paul Speed
+ * @author Paul Speed
  */
 public class ModelViewState extends BaseAppState {
 
@@ -82,25 +81,25 @@ public class ModelViewState extends BaseAppState {
 
     private EntityData ed;
     private TimeState timeState;
-    
+
     private Node modelRoot;
- 
+
     private Map<EntityId, Spatial> modelIndex = new HashMap<>();
-    
+
     private MobContainer mobs;
     private ModelContainer models;
 
     public ModelViewState() {
     }
 
-    public Spatial getModel( EntityId id ) {
+    public Spatial getModel(EntityId id) {
         return modelIndex.get(id);
     }
 
     @Override
-    protected void initialize( Application app ) {
+    protected void initialize(Application app) {
         modelRoot = new Node();
-        
+
         // Retrieve the time source from the network connection
         // The time source will give us a time in recent history that we should be
         // viewing.  This currently defaults to -100 ms but could vary (someday) depending
@@ -114,7 +113,7 @@ public class ModelViewState extends BaseAppState {
         // We now grab time from the TimeState which wraps the TimeSource to give
         // consistent timings over the whole frame
         this.timeState = getState(TimeState.class);
-    
+
         this.ed = getState(ConnectionState.class).getEntityData();
     }
 
@@ -124,13 +123,13 @@ public class ModelViewState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        
+
         mobs = new MobContainer(ed);
         models = new ModelContainer(ed);
-        mobs.start(); 
+        mobs.start();
         models.start();
-    
-        ((Main)getApplication()).getRootNode().attachChild(modelRoot);
+
+        ((Main) getApplication()).getRootNode().attachChild(modelRoot);
     }
 
     @Override
@@ -138,44 +137,44 @@ public class ModelViewState extends BaseAppState {
         modelRoot.removeFromParent();
 
         models.stop();
-        mobs.stop();        
+        mobs.stop();
         mobs = null;
-        models = null;        
+        models = null;
     }
 
     @Override
-    public void update( float tpf ) {
- 
+    public void update(float tpf) {
+
         // Grab a consistent time for this frame
         long time = timeState.getTime();
 
         // Update all of the models
         models.update();
         mobs.update();
-        for( Mob mob : mobs.getArray() ) {
+        for (Mob mob : mobs.getArray()) {
             mob.updateSpatial(time);
-        } 
+        }
     }
-    
-    protected Spatial createShip( Entity entity ) {
-    
+
+    protected Spatial createShip(Entity entity) {
+
         AssetManager assetManager = getApplication().getAssetManager();
-        
+
         Spatial ship = assetManager.loadModel("Models/fighter.j3o");
         ship.center();
         Texture texture = assetManager.loadTexture("Textures/ship1.png");
         //Material mat = GuiGlobals.getInstance().createMaterial(texture, false).getMaterial();
         Material mat = new Material(getApplication().getAssetManager(), "MatDefs/FogUnshaded.j3md");
         mat.setTexture("ColorMap", texture);
-        mat.setColor("FogColor", new ColorRGBA(0, 0, 0.1f, 1));        
-        mat.setFloat("FogDepth", 64);        
+        mat.setColor("FogColor", new ColorRGBA(0, 0, 0.1f, 1));
+        mat.setFloat("FogDepth", 64);
         ship.setMaterial(mat);
- 
+
         Node result = new Node("ship:" + entity.getId());
-        result.attachChild(ship);        
- 
+        result.attachChild(ship);
+
         result.setUserData("entityId", entity.getId().getId());
-        
+
         return result;
     }
 
@@ -187,19 +186,30 @@ public class ModelViewState extends BaseAppState {
             world.depthFirstTraversal(new SceneGraphVisitorAdapter() {
                 @Override
                 public void visit(Geometry geom) {
-                super.visit(geom);
-                if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
-                    //geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
-                    geom.getMaterial().setBoolean("UseBrokenGLTFExporter", true);
+                    super.visit(geom);
+                    if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
+                        //geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                        geom.getMaterial().setBoolean("UseBrokenGLTFExporter", true);
+                    }
+
+                    for (Light light : geom.getLocalLightList()) {
+                        if (light instanceof PointLight) {
+                            light.setColor(light.getColor().mult(5));
+                        }
+                    }
+
+                    processGameEntityFromMap(geom);
+
                 }
 
-                for (Light light : geom.getLocalLightList()){
-                    if (light instanceof PointLight){
-                        light.setColor(light.getColor().mult(5));
-                    }
+                @Override
+                public void visit(Node geom) {
+                    super.visit(geom); //To change body of generated methods, choose Tools | Templates.
+                    processGameEntityFromMap(geom);
                 }
-                }
+
             });
+
         } catch (AssetNotFoundException anf) {
             // Show programmers art if assets not found
             world = new Geometry("World", new Box(64f, 0.5f, 64f));
@@ -214,12 +224,33 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
-    protected Spatial createGravSphere( Entity entity ) {
-        
+    // we need to handle game entity stuff here....
+    // this has to load the different game entities into the list of availible entities to load
+    // also remove any 'game entity' type objects from the scene
+    // also remove and populate the spawn/teleport lists
+    protected void processGameEntityFromMap(Spatial spatial) {
+
+        if ("HealthPack10".equals(spatial.getName())) {
+            log.info("Healthpack");
+        }
+
+        Float value = spatial.getUserData("IsPickUpComponent");
+
+        if (value != null) {
+            log.info("    -" + value);
+        }
+
+//        for (String userDataKey : geom.getUserDataKeys()) {
+//            log.info("    -" + userDataKey);
+//        }
+    }
+
+    protected Spatial createGravSphere(Entity entity) {
+
         SphereShape shape = ed.getComponent(entity.getId(), SphereShape.class);
-        float radius = shape == null ? 1 : (float)shape.getRadius();
-                 
-        GuiGlobals globals = GuiGlobals.getInstance(); 
+        float radius = shape == null ? 1 : (float) shape.getRadius();
+
+        GuiGlobals globals = GuiGlobals.getInstance();
         Sphere sphere = new Sphere(40, 40, radius);
         sphere.setTextureMode(Sphere.TextureMode.Projected);
         sphere.scaleTextureCoordinates(new Vector2f(60, 40));
@@ -228,13 +259,13 @@ public class ModelViewState extends BaseAppState {
         //Material mat = globals.createMaterial(texture, false).getMaterial();
         Material mat = new Material(getApplication().getAssetManager(), "MatDefs/FogUnshaded.j3md");
         mat.setTexture("ColorMap", texture);
-        mat.setColor("FogColor", new ColorRGBA(0, 0, 0.1f, 1));        
-        mat.setFloat("FogDepth", 256);        
+        mat.setColor("FogColor", new ColorRGBA(0, 0, 0.1f, 1));
+        mat.setFloat("FogDepth", 256);
         geom.setMaterial(mat);
-        
+
         geom.setLocalTranslation(16, 16, 16);
         geom.rotate(-FastMath.HALF_PI, 0, 0);
-        
+
         return geom;
     }
 
@@ -262,17 +293,17 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
-    protected Spatial createModel( Entity entity ) {
+    protected Spatial createModel(Entity entity) {
         // Check to see if one already exists
         Spatial result = modelIndex.get(entity.getId());
-        if( result != null ) {
+        if (result != null) {
             return result;
         }
-        
+
         // Else figure out what type to create... 
         ObjectType type = entity.get(ObjectType.class);
         String typeName = type.getTypeName(ed);
-        switch( typeName ) {
+        switch (typeName) {
             case ObjectTypes.SHIP:
                 result = createShip(entity);
                 break;
@@ -294,46 +325,47 @@ public class ModelViewState extends BaseAppState {
                 break;
 
             default:
-                throw new RuntimeException("Unknown spatial type:" + typeName); 
+                throw new RuntimeException("Unknown spatial type:" + typeName);
         }
-        
+
         // Add it to the index
         modelIndex.put(entity.getId(), result);
- 
-        modelRoot.attachChild(result);       
-        
-        return result;        
+
+        modelRoot.attachChild(result);
+
+        return result;
     }
 
-    protected void updateModel( Spatial spatial, Entity entity, boolean updatePosition ) {
-        if( updatePosition ) {
+    protected void updateModel(Spatial spatial, Entity entity, boolean updatePosition) {
+        if (updatePosition) {
             Position pos = entity.get(Position.class);
-            
+
             // I like to move it... move it...
             spatial.setLocalTranslation(pos.getLocation().toVector3f());
             spatial.setLocalRotation(pos.getFacing().toQuaternion());
         }
     }
-    
-    protected void removeModel( Spatial spatial, Entity entity ) { 
+
+    protected void removeModel(Spatial spatial, Entity entity) {
         modelIndex.remove(entity.getId());
         spatial.removeFromParent();
     }
-    
+
     private class Mob {
+
         Entity entity;
         Spatial spatial;
         boolean visible;
         boolean localPlayerShip;
- 
+
         TransitionBuffer<PositionTransition> buffer;
-        
-        public Mob( Entity entity ) {
+
+        public Mob(Entity entity) {
             this.entity = entity;
 
             this.spatial = createModel(entity); //createCharacter(entity);
             //modelRoot.attachChild(spatial);
- 
+
             BodyPosition bodyPos = entity.get(BodyPosition.class);
             // BodyPosition requires special management to make
             // sure all instances of BodyPosition are sharing the same
@@ -341,117 +373,118 @@ public class ModelViewState extends BaseAppState {
             // be 'initialized'.            
             bodyPos.initialize(entity.getId(), 12);
             buffer = bodyPos.getBuffer();
-            
+
             // If this is the player's ship then we don't want the model
             // shown else it looks bad.  A) it's ugly.  B) the model will
             // always lag the player's turning.
-            if( entity.getId().getId() == getState(GameSessionState.class).getCharacterId().getId() ) {
+            if (entity.getId().getId() == getState(GameSessionState.class).getCharacterId().getId()) {
                 this.localPlayerShip = true;
             }
- 
+
             // Starts invisible until we know otherwise           
             resetVisibility();
         }
- 
-        public void updateSpatial( long time ) {
- 
+
+        public void updateSpatial(long time) {
+
             // Look back in the brief history that we've kept and
             // pull an interpolated value.  To do this, we grab the
             // span of time that contains the time we want.  PositionTransition
             // represents a starting and an ending pos+rot over a span of time.
             PositionTransition trans = buffer.getTransition(time);
-            if( trans != null ) {
+            if (trans != null) {
                 spatial.setLocalTranslation(trans.getPosition(time, true));
                 spatial.setLocalRotation(trans.getRotation(time, true));
                 setVisible(trans.getVisibility(time));
-            }            
+            }
         }
-        
+
         protected void updateComponents() {
             updateModel(spatial, entity, false);
         }
-        
-        protected void setVisible( boolean f ) {
-            if( this.visible == f ) {
+
+        protected void setVisible(boolean f) {
+            if (this.visible == f) {
                 return;
             }
             this.visible = f;
             resetVisibility();
         }
-        
-        protected void resetVisibility() {        
-            if( visible && !localPlayerShip ) {
+
+        protected void resetVisibility() {
+            if (visible && !localPlayerShip) {
                 spatial.setCullHint(Spatial.CullHint.Inherit);
             } else {
                 spatial.setCullHint(Spatial.CullHint.Always);
             }
         }
-        
-        public void dispose() { 
-            if( models.getObject(entity.getId()) == null ) {
+
+        public void dispose() {
+            if (models.getObject(entity.getId()) == null) {
                 removeModel(spatial, entity);
             }
         }
     }
-    
+
     private class MobContainer extends EntityContainer<Mob> {
-        public MobContainer( EntityData ed ) {
+
+        public MobContainer(EntityData ed) {
             super(ed, ObjectType.class, BodyPosition.class);
         }
-    
-        @Override     
+
+        @Override
         protected Mob[] getArray() {
             return super.getArray();
         }
-    
-        @Override       
-        protected Mob addObject( Entity e ) {
+
+        @Override
+        protected Mob addObject(Entity e) {
             System.out.println("MobContainer.addObject(" + e + ")");
             return new Mob(e);
         }
-    
-        @Override       
-        protected void updateObject( Mob object, Entity e ) {
+
+        @Override
+        protected void updateObject(Mob object, Entity e) {
             object.updateComponents();
         }
-    
-        @Override       
-        protected void removeObject( Mob object, Entity e ) {
-            object.dispose();   
-        }            
+
+        @Override
+        protected void removeObject(Mob object, Entity e) {
+            object.dispose();
+        }
     }
 
     /**
-     *  Contains the static objects... care needs to be taken that if
-     *  an object exists in both the MobContainer and this one that the
-     *  MobContainer takes precedence.
+     * Contains the static objects... care needs to be taken that if an object
+     * exists in both the MobContainer and this one that the MobContainer takes
+     * precedence.
      */
     private class ModelContainer extends EntityContainer<Spatial> {
-        public ModelContainer( EntityData ed ) {
+
+        public ModelContainer(EntityData ed) {
             super(ed, ObjectType.class, Position.class);
         }
-        
-        @Override       
-        protected Spatial addObject( Entity e ) {
+
+        @Override
+        protected Spatial addObject(Entity e) {
             System.out.println("ModelContainer.addObject(" + e + ")");
             Spatial result = createModel(e);
             updateObject(result, e);
-            return result;        
+            return result;
         }
-    
-        @Override       
-        protected void updateObject( Spatial object, Entity e ) {
+
+        @Override
+        protected void updateObject(Spatial object, Entity e) {
             System.out.println("MobContainer.updateObject(" + e + ")");
             updateModel(object, e, true);
         }
-    
-        @Override       
-        protected void removeObject( Spatial object, Entity e ) {
-            if( mobs.getObject(e.getId()) == null ) {
+
+        @Override
+        protected void removeObject(Spatial object, Entity e) {
+            if (mobs.getObject(e.getId()) == null) {
                 removeModel(object, e);
             }
-        }            
-        
+        }
+
     }
 }
-

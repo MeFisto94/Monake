@@ -34,4 +34,5 @@ logs
 
 # Ignore specific Asset Files (they do not belong in this repo)
 /assets/Models/level.j3o
+/assets/Scenes/quakestartleveltextured_nosky.gltf
 /assets/Textures/spruit_sunrise_4k.hdr

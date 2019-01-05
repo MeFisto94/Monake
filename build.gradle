@@ -45,6 +45,7 @@ dependencies {
     compile 'com.github.MeFisto94.jmonkeyengine:jme3-bullet-native:fix-gltf-exporter-bug-SNAPSHOT'
     compile 'com.github.MeFisto94.jmonkeyengine:jme3-lwjgl:fix-gltf-exporter-bug-SNAPSHOT'
     compile 'com.github.MeFisto94.jmonkeyengine:jme3-networking:fix-gltf-exporter-bug-SNAPSHOT'
+    compile 'com.github.MeFisto94.jmonkeyengine:jme3-plugins:fix-gltf-exporter-bug-SNAPSHOT'
     /*compile "org.jmonkeyengine:jme3-desktop:$jmeVersion"
     compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
     compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
