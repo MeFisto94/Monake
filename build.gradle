@@ -59,6 +59,8 @@ dependencies {
 
     // And our base code for sim-etheral, SiO2, etc.
     // (many of these need to be built locally and 'gradle install'ed as of this writing)
+    // Note: Paul is wrong, there is jitpack and in the meantime all are published to mavenCentral
+    compile 'com.github.jMonkeyEngine-Contributions:zay-es:master-SNAPSHOT'
     compile "com.simsilica:sio2:1.2.0"
     compile "com.simsilica:sim-math:1.2.0"
     compile "com.simsilica:sim-ethereal:1.3.0"
