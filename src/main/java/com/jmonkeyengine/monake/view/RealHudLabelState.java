@@ -170,6 +170,5 @@ public class RealHudLabelState extends BaseAppState {
         lblHealth.setText(String.valueOf(playerStats.get(HealthComponent.class).getHealth()));
         lblArmor.setText(String.valueOf(playerStats.get(ArmorComponent.class).getArmor()));
         //lblAmmo.setText(String.valueOf(playerStats.get(HealthComponent.class).getHealth()));
-        System.out.println("Update Changes");
     }
 }
