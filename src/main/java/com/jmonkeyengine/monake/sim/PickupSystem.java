@@ -94,7 +94,7 @@ public class PickupSystem extends AbstractGameSystem implements EntityCollisionL
                 return;
             }
 
-            int newHealth = Math.max(200, playerHealth.getHealth() + healthBoost.getHealth());
+            int newHealth = Math.min(200, playerHealth.getHealth() + healthBoost.getHealth());
             System.out.println("Healing for " + newHealth);
             ed.setComponent(player.getId(), new HealthComponent(newHealth));
             ed.removeEntity(ghost.getId());

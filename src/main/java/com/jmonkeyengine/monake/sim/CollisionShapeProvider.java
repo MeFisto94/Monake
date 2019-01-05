@@ -22,18 +22,29 @@ import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
 
 /**
- * This class is responsible for passing/creating the right CollisionShapes based on some strings.
- * The reason for this complication is, that the Server needs the CollisionShapes but only the client loads the
- * Meshes/Spatials usually.
+ * This class is responsible for passing/creating the right CollisionShapes
+ * based on some strings. The reason for this complication is, that the Server
+ * needs the CollisionShapes but only the client loads the Meshes/Spatials
+ * usually.
  */
 public class CollisionShapeProvider {
-    static EntityData entityData;
 
-    public static void registerDefaults(EntityData ed, CollisionShapes shapes) {
+    static EntityData entityData;
+    static Spatial world;
+
+    public static void registerEntityData(EntityData ed) {
         if (entityData == null) {
             entityData = ed;
         }
-        shapes.register(ShapeInfos.worldInfo(ed), lookup(ShapeInfos.worldInfo(ed)));
+    }
+
+    public static void registerShapes(CollisionShapes shapes) {
+        shapes.register(ShapeInfos.worldInfo(entityData), lookup(ShapeInfos.worldInfo(entityData)));
+    }
+
+    public static void setWorld(Spatial spatial) {
+        world = spatial;
+        // once the world is set, register the shapes
     }
 
     public static CollisionShape lookup(ShapeInfo shapeInfo) {
@@ -45,8 +56,7 @@ public class CollisionShapeProvider {
         if (shapeInfo.getShapeId() == ShapeInfos.worldInfo(entityData).getShapeId()) {
             // Taken from RigidBodyControl code :D
             try {
-                Spatial spatial = ServerApplication.self.getAssetManager().loadModel("Models/level.j3o");
-                return CollisionShapeFactory.createMeshShape(spatial);
+                return CollisionShapeFactory.createMeshShape(world);
             } catch (AssetNotFoundException anf) {
                 return new BoxCollisionShape(new Vector3f(64f, 0.5f, 64f)); // See ModelViewState
             }
@@ -62,7 +72,7 @@ public class CollisionShapeProvider {
     public static Geometry getPlayerCollisionShapeAsGeometry(Application app, EntityData ed, float playerYOffset) {
         Geometry physicsCapsule = new Geometry("", new Cylinder(32, 32, 0.5f, 4f));
         physicsCapsule.setLocalTranslation(0f, 4f / 2f + playerYOffset, 0f); // height / 2 -> origin = center of capsule, -1.2f because Jaime
-        physicsCapsule.setLocalRotation(new Quaternion(new float[] { FastMath.HALF_PI, 0f, 0f}));
+        physicsCapsule.setLocalRotation(new Quaternion(new float[]{FastMath.HALF_PI, 0f, 0f}));
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Pink);
         mat.getAdditionalRenderState().setWireframe(true);

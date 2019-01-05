@@ -37,39 +37,32 @@
 package com.jmonkeyengine.monake.es.components;
 
 import com.simsilica.es.EntityComponent;
-import com.simsilica.mathd.Vec3d;
 
 
 /**
- * The Health Component represents the health of players and possibly other things like barrels.
+ * The Ammo Component represents the ammo the current weapon has
  *
  *  @author MeFisto94
  */
-public class HealthComponent implements EntityComponent {
+public class AmmoNailgunComponent implements EntityComponent {
 
-    private int health; // Does sim-eth-es support byte to save bandwidth?
+    private int ammo; // Does sim-eth-es support byte to save bandwidth?
 
     /**
      *  For SpiderMonkey serialization purposes.
      */
-    protected HealthComponent() {
+    protected AmmoNailgunComponent() { }
+
+    public AmmoNailgunComponent(int ammo) {
+        this.ammo = ammo;
     }
 
-    public HealthComponent(int health) {
-        System.out.println("HEALTHCOMPONENT" + health);
-        this.health = health;
-    }
-
-    public int getHealth() {
-        return health;
+    public int getAmmo() {
+        return ammo;
     }
 
     @Override
     public String toString() {
-        return "HealthComponent[health=" + health + "]";
-    }
-
-    public boolean isDead() {
-        return health <= 0;
+        return "AmmoComponent[ammo=" + ammo + "]";
     }
 }

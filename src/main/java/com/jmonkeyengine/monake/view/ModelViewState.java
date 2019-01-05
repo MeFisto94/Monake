@@ -42,6 +42,7 @@ import com.jme3.asset.AssetNotFoundException;
 import com.jme3.light.Light;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -86,6 +87,8 @@ public class ModelViewState extends BaseAppState {
 
     private Map<EntityId, Spatial> modelIndex = new HashMap<>();
 
+    private Map<String, Spatial> mapModels = new HashMap<>();
+
     private MobContainer mobs;
     private ModelContainer models;
 
@@ -115,6 +118,10 @@ public class ModelViewState extends BaseAppState {
         this.timeState = getState(TimeState.class);
 
         this.ed = getState(ConnectionState.class).getEntityData();
+
+        // get the world loaded and the models loaded before any entities are assigned
+        // this prevents nullpointers later on.
+        initializeWorld();
     }
 
     @Override
@@ -156,6 +163,51 @@ public class ModelViewState extends BaseAppState {
         }
     }
 
+    private void initializeWorld() {
+        Spatial world;
+
+        try {
+            world = getApplication().getAssetManager().loadModel("Models/level.j3o");
+            world.depthFirstTraversal(new SceneGraphVisitorAdapter() {
+                @Override
+                public void visit(Geometry geom) {
+                    super.visit(geom);
+                    if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
+                        //geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
+                        geom.getMaterial().setBoolean("UseBrokenGLTFExporter", true);
+                    }
+
+                    for (Light light : geom.getLocalLightList()) {
+                        if (light instanceof PointLight) {
+                            light.setColor(light.getColor().mult(5));
+                        }
+                    }
+
+                    geom.getMaterial().getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Back);
+                    processGameEntityFromMap(geom);
+
+                }
+
+                @Override
+                public void visit(Node geom) {
+                    super.visit(geom); //To change body of generated methods, choose Tools | Templates.
+                    processGameEntityFromMap(geom);
+                }
+
+            });
+
+        } catch (AssetNotFoundException anf) {
+            // Show programmers art if assets not found
+            world = new Geometry("World", new Box(64f, 0.5f, 64f));
+            Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+            mat.setColor("Color", ColorRGBA.Red);
+            world.setMaterial(mat);
+        }
+
+        mapModels.put("World", world);
+
+    }
+
     protected Spatial createShip(Entity entity) {
 
         AssetManager assetManager = getApplication().getAssetManager();
@@ -179,44 +231,7 @@ public class ModelViewState extends BaseAppState {
     }
 
     protected Spatial createWorld(Entity entity) {
-        Spatial world;
-
-        try {
-            world = getApplication().getAssetManager().loadModel("Models/level.j3o");
-            world.depthFirstTraversal(new SceneGraphVisitorAdapter() {
-                @Override
-                public void visit(Geometry geom) {
-                    super.visit(geom);
-                    if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
-                        //geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
-                        geom.getMaterial().setBoolean("UseBrokenGLTFExporter", true);
-                    }
-
-                    for (Light light : geom.getLocalLightList()) {
-                        if (light instanceof PointLight) {
-                            light.setColor(light.getColor().mult(5));
-                        }
-                    }
-
-                    processGameEntityFromMap(geom);
-
-                }
-
-                @Override
-                public void visit(Node geom) {
-                    super.visit(geom); //To change body of generated methods, choose Tools | Templates.
-                    processGameEntityFromMap(geom);
-                }
-
-            });
-
-        } catch (AssetNotFoundException anf) {
-            // Show programmers art if assets not found
-            world = new Geometry("World", new Box(64f, 0.5f, 64f));
-            Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-            mat.setColor("Color", ColorRGBA.Red);
-            world.setMaterial(mat);
-        }
+        Spatial world = mapModels.get("World");
 
         Node result = new Node("World: " + entity.getId());
         result.attachChild(world);
@@ -224,25 +239,64 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
-    // we need to handle game entity stuff here....
-    // this has to load the different game entities into the list of availible entities to load
-    // also remove any 'game entity' type objects from the scene
-    // also remove and populate the spawn/teleport lists
+    // so, we need to remove the spatial from the scene, and add it to the models list
+    // to be added back in by the entity system
     protected void processGameEntityFromMap(Spatial spatial) {
 
-        if ("HealthPack10".equals(spatial.getName())) {
-            log.info("Healthpack");
-        }
-
-        Float value = spatial.getUserData("IsPickUpComponent");
-
+        String value = spatial.getUserData("IsPickupComponent");
         if (value != null) {
-            log.info("    -" + value);
+            // pickup types
+            //      - health
+            //      - ammo shotgun 
+            //      - ammo nailgun 
+            //      - weapons nailgun
+            spatial.removeFromParent();
+            if (spatial.getUserData("HealthComponent") != null) {
+                String health = spatial.getUserData("HealthComponent");
+                Spatial healthSpatial = spatial.deepClone();
+                healthSpatial.setLocalTranslation(0, 0, 0);
+                mapModels.put("Health" + health, healthSpatial);
+                log.info("Loaded health");
+            }
+            if (spatial.getUserData("AmmoShotgunComponent") != null) {
+                String ammo = spatial.getUserData("AmmoShotgunComponent");
+                Spatial ammoSpatial = spatial.deepClone();
+                ammoSpatial.setLocalTranslation(0, 0, 0);
+                mapModels.put("AmmoShotgun" + ammo, ammoSpatial);
+            }
+            if (spatial.getUserData("AmmoNailgunComponent") != null) {
+                String ammo = spatial.getUserData("AmmoNailgunComponent");
+                Spatial ammoSpatial = spatial.deepClone();
+                ammoSpatial.setLocalTranslation(0, 0, 0);
+                mapModels.put("AmmoNailgun" + ammo, ammoSpatial);
+            }
+            if (spatial.getUserData("NailGun") != null) {
+                String Nailgun = spatial.getUserData("NailGun");
+                Spatial nailgunSpatial = spatial.deepClone();
+                nailgunSpatial.setLocalTranslation(0, 0, 0);
+                mapModels.put("Nailgun", nailgunSpatial);
+                log.info("Weapon NailGun: " + Nailgun);
+            }
         }
 
-//        for (String userDataKey : geom.getUserDataKeys()) {
-//            log.info("    -" + userDataKey);
-//        }
+        value = spatial.getUserData("Spawn");
+        if (value != null) {
+            log.info("Spawn: " + spatial.getLocalTranslation());
+            spatial.removeFromParent();
+        }
+
+        value = spatial.getUserData("Teleport");
+        if (value != null) {
+            log.info("Teleporter: " + spatial.getLocalTranslation());
+            spatial.removeFromParent();
+        }
+
+        value = spatial.getUserData("TeleportEndPoint");
+        if (value != null) {
+            log.info("TeleporterEndPoint: " + spatial.getLocalTranslation());
+            spatial.removeFromParent();
+        }
+
     }
 
     protected Spatial createGravSphere(Entity entity) {
@@ -275,8 +329,32 @@ public class ModelViewState extends BaseAppState {
         mat.setColor("Color", ColorRGBA.Blue);
         box.setMaterial(mat);
 
-        Node result = new Node("World: " + entity.getId());
+        Node result = new Node("Box: " + entity.getId());
         result.attachChild(box);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
+    protected Spatial createAmmoShotgun(Entity entity) {
+        Spatial spatial = mapModels.get("AmmoShotgun20").deepClone();
+        Node result = new Node("AmmoShotgun: " + entity.getId());
+        result.attachChild(spatial);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
+    protected Spatial createAmmoNailgun(Entity entity) {
+        Spatial spatial = mapModels.get("AmmoNailgun20").deepClone();
+        Node result = new Node("AmmoNailgun: " + entity.getId());
+        result.attachChild(spatial);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
+    protected Spatial createHealth(Entity entity) {
+        Spatial spatial = mapModels.get("Health10").deepClone();
+        Node result = new Node("Health: " + entity.getId());
+        result.attachChild(spatial);
         result.setUserData("entityId", entity.getId().getId());
         return result;
     }
@@ -310,20 +388,24 @@ public class ModelViewState extends BaseAppState {
             case ObjectTypes.GRAV_SPHERE:
                 result = createGravSphere(entity);
                 break;
-
             case ObjectTypes.WORLD:
                 result = createWorld(entity);
                 break;
-
             case ObjectTypes.BOX:
-            case ObjectTypes.PICKUP_HEALTH:
                 result = createBox(entity);
                 break;
-
+            case ObjectTypes.PICKUP_AMMO_SHOTGUN:
+                result = createAmmoShotgun(entity);
+                break;
+            case ObjectTypes.PICKUP_AMMO_NAILGUN:
+                result = createAmmoNailgun(entity);
+                break;
+            case ObjectTypes.PICKUP_HEALTH:
+                result = createHealth(entity);
+                break;
             case ObjectTypes.PLAYER:
                 result = createPlayer(entity);
                 break;
-
             default:
                 throw new RuntimeException("Unknown spatial type:" + typeName);
         }

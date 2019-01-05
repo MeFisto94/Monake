@@ -33,31 +33,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmonkeyengine.monake.es;
 
 import com.simsilica.es.EntityData;
 
 /**
- *  Factory methods for the common object types.  Because we run the
- *  string names through the EntityData's string index we can't just
- *  have normal constants.
+ * Factory methods for the common object types. Because we run the string names
+ * through the EntityData's string index we can't just have normal constants.
  *
- *  @author    Paul Speed
- */ 
+ * @author Paul Speed
+ */
 public class ObjectTypes {
+
     public static final String SHIP = "ship";
     public static final String GRAV_SPHERE = "gravSphere";
     public static final String WORLD = "world";
     public static final String BOX = "box";
     public static final String PLAYER = "player";
     public static final String PICKUP_HEALTH = "pickupHealth";
-    
-    public static ObjectType shipType( EntityData ed ) {
+    public static final String PICKUP_AMMO_SHOTGUN = "pickupAmmoShotgun";
+    public static final String PICKUP_AMMO_NAILGUN = "pickupAmmoNailgun";
+
+    public static ObjectType shipType(EntityData ed) {
         return ObjectType.create(SHIP, ed);
     }
-    
-    public static ObjectType gravSphereType( EntityData ed ) {
+
+    public static ObjectType gravSphereType(EntityData ed) {
         return ObjectType.create(GRAV_SPHERE, ed);
     }
 
@@ -71,6 +72,14 @@ public class ObjectTypes {
 
     public static ObjectType pickupHealthType(EntityData ed) {
         return ObjectType.create(PICKUP_HEALTH, ed);
+    }
+
+    public static ObjectType pickupAmmoShotgunType(EntityData ed) {
+        return ObjectType.create(PICKUP_AMMO_SHOTGUN, ed);
+    }
+
+    public static ObjectType pickupAmmoNailgunType(EntityData ed) {
+        return ObjectType.create(PICKUP_AMMO_NAILGUN, ed);
     }
 
     public static ObjectType playerType(EntityData ed) {

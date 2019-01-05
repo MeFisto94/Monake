@@ -51,7 +51,7 @@ import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.Position;
 import com.jmonkeyengine.monake.es.SphereShape;
-import com.jmonkeyengine.monake.es.components.AmmoComponent;
+import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
 import com.jmonkeyengine.monake.es.components.EffectComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
@@ -181,7 +181,7 @@ public class GameServer {
         CollisionShapes shapes = systems.register(CollisionShapes.class,
                 new DefaultCollisionShapes(ed, CollisionShapeProvider::lookup));
 
-        CollisionShapeProvider.registerDefaults(ed, shapes);
+        CollisionShapeProvider.registerEntityData(ed);
 
         BulletSystem bullet = new BulletSystem();
         // Only Needed with
@@ -237,7 +237,7 @@ public class GameServer {
         Serializer.registerClass(ObjectType.class, new FieldSerializer());
         Serializer.registerClass(Position.class, new FieldSerializer());
         Serializer.registerClass(SphereShape.class, new FieldSerializer());
-        Serializer.registerClass(AmmoComponent.class, new FieldSerializer());
+        Serializer.registerClass(AmmoShotgunComponent.class, new FieldSerializer());
         Serializer.registerClass(ArmorComponent.class, new FieldSerializer());
         Serializer.registerClass(HealthComponent.class, new FieldSerializer());
         Serializer.registerClass(EffectComponent.class, new FieldSerializer());

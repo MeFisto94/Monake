@@ -44,16 +44,16 @@ import com.simsilica.es.EntityComponent;
  *
  *  @author MeFisto94
  */
-public class AmmoComponent implements EntityComponent {
+public class AmmoShotgunComponent implements EntityComponent {
 
     private int ammo; // Does sim-eth-es support byte to save bandwidth?
 
     /**
      *  For SpiderMonkey serialization purposes.
      */
-    protected AmmoComponent() { }
+    protected AmmoShotgunComponent() { }
 
-    public AmmoComponent(int ammo) {
+    public AmmoShotgunComponent(int ammo) {
         this.ammo = ammo;
     }
 

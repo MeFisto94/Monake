@@ -33,7 +33,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmonkeyengine.monake.sim;
 
 import com.jme3.math.Vector3f;
@@ -42,7 +41,8 @@ import com.jmonkeyengine.monake.bullet.Mass;
 import com.jmonkeyengine.monake.bullet.ShapeInfo;
 import com.jmonkeyengine.monake.bullet.SpawnPosition;
 import com.jmonkeyengine.monake.es.*;
-import com.jmonkeyengine.monake.es.components.AmmoComponent;
+import com.jmonkeyengine.monake.es.components.AmmoNailgunComponent;
+import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.jmonkeyengine.monake.es.components.IsPickupComponent;
@@ -51,23 +51,26 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
 import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *  Utility methods for creating the common game entities used by 
- *  the simulation.  In cases where a game entity may have multiple
- *  specific components or dependencies used to create it, it can be
- *  more convenient to have a centralized factory method.  Especially
- *  if those objects are widely used.  For entities with only a few
- *  components or that are created by one system and only consumed by
- *  one other, then this is not necessarily true.
+ * Utility methods for creating the common game entities used by the simulation.
+ * In cases where a game entity may have multiple specific components or
+ * dependencies used to create it, it can be more convenient to have a
+ * centralized factory method. Especially if those objects are widely used. For
+ * entities with only a few components or that are created by one system and
+ * only consumed by one other, then this is not necessarily true.
  *
- *  @author    Paul Speed
+ * @author Paul Speed
  */
 public class GameEntities {
 
+    static Logger log = LoggerFactory.getLogger(GameEntities.class);
+
     public static final Vector3f cameraOffset = new Vector3f(0f, 1.75f, 0f);
 
-    public static EntityId createCharacter(EntityId parent, EntityData ed ) {
+    public static EntityId createCharacter(EntityId parent, EntityData ed) {
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);
@@ -80,7 +83,7 @@ public class GameEntities {
     public static EntityId createWeapon(EntityData ed) {
         // @TODO: Add WeaponType and a Weapon Component
         EntityId result = ed.createEntity();
-        ed.setComponent(result, new AmmoComponent(64));
+        ed.setComponent(result, new AmmoShotgunComponent(64));
         return result;
     }
 
@@ -98,11 +101,29 @@ public class GameEntities {
         return result;
     }
 
-    public static EntityId createHealthPickup(EntityData ed, Vector3f position) {
+    public static EntityId createHealthPickup(EntityData ed, int amount, Vector3f position) {
         EntityId result = ed.createEntity();
         ed.setComponents(result, ObjectTypes.pickupHealthType(ed), new SpawnPosition(position),
-                new HealthComponent(100), ShapeInfos.boxInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
+                new HealthComponent(amount), ShapeInfos.boxInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
+                new IsPickupComponent());
+        log.info("CreateHealth: " + amount);
+        return result;
+    }
+
+    public static EntityId createAmmoShotgunPickup(EntityData ed, int amount, Vector3f position) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.pickupAmmoShotgunType(ed), new SpawnPosition(position),
+                new AmmoShotgunComponent(amount), ShapeInfos.boxInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
                 new IsPickupComponent());
         return result;
     }
+
+    public static EntityId createAmmoNailgunPickup(EntityData ed, int amount, Vector3f position) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.pickupAmmoNailgunType(ed), new SpawnPosition(position),
+                new AmmoNailgunComponent(amount), ShapeInfos.boxInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
+                new IsPickupComponent());
+        return result;
+    }
+
 }
