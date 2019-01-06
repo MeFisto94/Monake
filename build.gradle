@@ -62,7 +62,11 @@ dependencies {
     // (many of these need to be built locally and 'gradle install'ed as of this writing)
     // Note: Paul is wrong, there is jitpack and in the meantime all are published to mavenCentral
     implementation 'com.github.jMonkeyEngine-Contributions:zay-es:59e71e2cac'
-    compile "com.simsilica:sio2:1.2.0"
+    implementation 'com.github.MeFisto94:SiO2:a0238f3ef9'
+    compile 'com.github.MeFisto94:SiO2:a0238f3ef9:sources'
+    compile 'com.github.MeFisto94:SiO2:a0238f3ef9:javadoc'
+
+    //compile "com.simsilica:sio2:1.2.0"
     compile "com.simsilica:sim-math:1.2.0"
     compile "com.simsilica:sim-ethereal:1.3.0"
 
