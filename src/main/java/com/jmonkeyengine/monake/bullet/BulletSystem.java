@@ -443,17 +443,14 @@ public class BulletSystem extends AbstractGameSystem {
 
         @Override
         protected void updateObject( EntityRigidBody object, Entity e ) {
-            Mass mass = e.get(Mass.class);
-            if( mass.getMass() == 0 ) {
-                // See if it's the spawn position that has moved
-                SpawnPosition pos = e.get(SpawnPosition.class);
-                if( log.isTraceEnabled() ) {
-                    log.trace("Moving " + object + "  to:" + pos);
-                }            
-                object.setPhysicsLocation(pos.getLocation());
-                object.setPhysicsRotation(pos.getOrientation());
-                objectUpdated(object);
-            }            
+            // See if it's the spawn position that has moved
+            SpawnPosition pos = e.get(SpawnPosition.class);
+            if( log.isTraceEnabled() ) {
+                log.trace("Moving " + object + "  to:" + pos);
+            }
+            object.setPhysicsLocation(pos.getLocation());
+            object.setPhysicsRotation(pos.getOrientation());
+            objectUpdated(object);
         }
         
         @Override

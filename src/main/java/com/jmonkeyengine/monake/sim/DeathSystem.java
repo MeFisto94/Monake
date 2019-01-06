@@ -10,17 +10,11 @@ import com.jmonkeyengine.monake.bullet.Mass;
 import com.jmonkeyengine.monake.bullet.SpawnPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.ObjectTypes;
-import com.jmonkeyengine.monake.es.ShapeInfos;
-import com.jmonkeyengine.monake.es.components.ActiveWeaponComponent;
-import com.jmonkeyengine.monake.es.components.AmmoNailgunComponent;
-import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
-import com.jmonkeyengine.monake.es.components.ArmorComponent;
-import com.jmonkeyengine.monake.es.components.HealthComponent;
+import com.jmonkeyengine.monake.es.components.*;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
-import com.simsilica.es.Name;
 import com.simsilica.es.filter.FieldFilter;
 import com.simsilica.sim.AbstractGameSystem;
 import com.simsilica.sim.SimTime;
@@ -32,9 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author wobblytrout
  */
 public class DeathSystem extends AbstractGameSystem {
-
     static Logger log = LoggerFactory.getLogger(DeathSystem.class);
-
     EntityData ed;
     EntitySet playerSet;
 
@@ -62,7 +54,7 @@ public class DeathSystem extends AbstractGameSystem {
 
         // if a player gets to zero health, we MURDER them and respawn them at a random spawn location after 2 seconds?
         if (playerSet.applyChanges()) {
-            for (Entity entity : playerSet.getChangedEntities()) {
+            for (Entity entity: playerSet.getChangedEntities()) {
                 HealthComponent health = entity.get(HealthComponent.class);
 
                 if (health != null && health.isDead()) {
@@ -75,12 +67,11 @@ public class DeathSystem extends AbstractGameSystem {
     }
 
     public void respawnPlayer(EntityId player, EntityData ed) {
-               
-        // TODO randomize spawn locations
-        Vector3f spawnLocation = GameEntities.spawnLocations.get(0); // 29.5f, 20f, -30.4f
-        ed.setComponents(player, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(spawnLocation),
-                ShapeInfos.playerInfo(ed));
-        ed.setComponents(player, new HealthComponent(100), new ActiveWeaponComponent(WeaponTypes.SINGLESHOTGUN.ordinal()), new AmmoShotgunComponent(25), new AmmoNailgunComponent(0), new ArmorComponent(0, 0));
+        Vector3f spawnLocation = GameEntities.getRandomSpawnSpot(); // 29.5f, 20f, -30.4f
+        ed.setComponents(player, new Mass(50f), new SpawnPosition(spawnLocation), new HealthComponent(100));
+        ed.setComponents(player, new ActiveWeaponComponent(WeaponTypes.SINGLESHOTGUN.ordinal()),
+                new AmmoShotgunComponent(25), new AmmoNailgunComponent(0),
+                new ArmorComponent(0, 0));
     }
 
 }

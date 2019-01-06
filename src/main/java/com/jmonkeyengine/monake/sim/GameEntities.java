@@ -56,6 +56,8 @@ import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
 import com.simsilica.sim.SimTime;
 import java.util.ArrayList;
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,14 +74,16 @@ import org.slf4j.LoggerFactory;
 public class GameEntities {
 
     static Logger log = LoggerFactory.getLogger(GameEntities.class);
-
     public static final Vector3f cameraOffset = new Vector3f(0f, 1.75f, 0f);
+    public static final ArrayList<Vector3f> spawnLocations = new ArrayList<>();
+    protected static Random random = new Random();
 
-    public static final ArrayList<Vector3f> spawnLocations = new ArrayList();
+    public static Vector3f getRandomSpawnSpot() {
+        return spawnLocations.get(random.nextInt(spawnLocations.size()));
+    }
 
     public static EntityId createCharacter(EntityId parent, EntityData ed) {
-        // TODO randomize spawn locations
-        Vector3f spawnLocation = GameEntities.spawnLocations.get(0); // 29.5f, 20f, -30.4f
+        Vector3f spawnLocation = getRandomSpawnSpot(); // 29.5f, 20f, -30.4f
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);
