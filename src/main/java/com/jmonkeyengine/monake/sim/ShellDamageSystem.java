@@ -36,16 +36,22 @@
 package com.jmonkeyengine.monake.sim;
 
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.math.Vector3f;
 import com.jmonkeyengine.monake.bullet.BulletSystem;
 import com.jmonkeyengine.monake.bullet.EntityCollisionListener;
 import com.jmonkeyengine.monake.bullet.EntityPhysicsObject;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.ObjectTypes;
 import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
+import com.jmonkeyengine.monake.es.components.DamageComponent;
+import com.jmonkeyengine.monake.es.components.EffectComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
+import com.jmonkeyengine.monake.view.effects.EffectType;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
+import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
+import com.simsilica.es.common.Decay;
 import com.simsilica.sim.AbstractGameSystem;
 import com.simsilica.sim.SimTime;
 import org.slf4j.Logger;
@@ -57,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author MeFisto94
  */
 public class ShellDamageSystem extends AbstractGameSystem implements EntityCollisionListener {
+
     static Logger log = LoggerFactory.getLogger(ShellDamageSystem.class);
     EntityData ed;
 
@@ -95,29 +102,37 @@ public class ShellDamageSystem extends AbstractGameSystem implements EntityColli
         ObjectType objectTypeClass1 = objectEntity1.get(ObjectType.class);
         ObjectType objectTypeClass2 = objectEntity2.get(ObjectType.class);
 
+        if (objectTypeClass1 == null || objectTypeClass2 == null) {
+            return;
+        }
         String objectType1 = objectTypeClass1.getTypeName(ed);
         String objectType2 = objectTypeClass2.getTypeName(ed);
 
-        // @TODO: Change to ObjectTypes.WeaponShell, which contains a Health Component, a Ghost Component and a Decay Component (when not hitting something)
         if (objectType1.equals(ObjectTypes.PLAYER) && objectType2.equals(ObjectTypes.WEAPON_SHELL)) {
-            processHealthPlayerCollision(objectEntity1, objectEntity2);
+            processDamagePlayerCollision(objectEntity1, objectEntity2, event.getPositionWorldOnB());
         } else if (objectType2.equals(ObjectTypes.PLAYER) && objectType1.equals(ObjectTypes.WEAPON_SHELL)) {
-            processHealthPlayerCollision(objectEntity2, objectEntity1);
+            processDamagePlayerCollision(objectEntity2, objectEntity1, event.getPositionWorldOnA());
         }
     }
 
-    private void processHealthPlayerCollision(Entity player, Entity shell) {
-        HealthComponent shellDamage = ed.getComponent(shell.getId(), HealthComponent.class);
+    private void processDamagePlayerCollision(Entity player, Entity shell, Vector3f shellLocation) {
+        DamageComponent shellDamage = ed.getComponent(shell.getId(), DamageComponent.class);
         HealthComponent playerHealth = ed.getComponent(player.getId(), HealthComponent.class);
 
         if (playerHealth.isDead()) {
             return;
         }
 
-        int newHealth = Math.max(0, playerHealth.getHealth() - shellDamage.getHealth());
+        int newHealth = Math.max(0, playerHealth.getHealth() - shellDamage.getDamage());
         System.out.println("Setting Health to " + newHealth);
         ed.setComponent(player.getId(), new HealthComponent(newHealth));
+
+        Decay decay = ed.getComponent(shell.getId(), Decay.class);
+
         ed.removeEntity(shell.getId());
+
+        EntityId shellEffect = ed.createEntity();
+        ed.setComponents(shellEffect, decay, new EffectComponent(EffectType.SHOTGUNPARTICLES.ordinal(), shellEffect, shellLocation));
 
         //@TODO: FX and a System listening for HealthComponent.isDead
     }

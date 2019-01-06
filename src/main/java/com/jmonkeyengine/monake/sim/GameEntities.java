@@ -45,6 +45,7 @@ import com.jmonkeyengine.monake.es.components.ActiveWeaponComponent;
 import com.jmonkeyengine.monake.es.components.AmmoNailgunComponent;
 import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
+import com.jmonkeyengine.monake.es.components.DamageComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.simsilica.es.EntityData;
@@ -53,6 +54,7 @@ import com.simsilica.es.Name;
 import com.simsilica.es.common.Decay;
 import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
+import com.simsilica.sim.SimTime;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,11 +117,11 @@ public class GameEntities {
         return result;
     }
 
-    public static EntityId createWeaponShell(EntityData ed, Vector3f location, int damage, long currentTime) {
+    public static EntityId createWeaponShell(EntityData ed, Vector3f location, int damage, SimTime time) {
         EntityId result = ed.createEntity();
-        ed.setComponents(result, ObjectTypes.pickupHealthType(ed), new SpawnPosition(location),
-                new HealthComponent(damage), ShapeInfos.sphereInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
-                new Decay(currentTime, currentTime + 1000));
+        ed.setComponents(result, ObjectTypes.weaponShell(ed), new SpawnPosition(location),
+                new DamageComponent(damage), ShapeInfos.sphereInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
+                Decay.duration(time.getTime(), time.toSimTime(0.3f)));
         return result;
     }
 

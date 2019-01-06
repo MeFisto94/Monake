@@ -349,6 +349,20 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
+    protected Spatial createWeaponShell(Entity entity) {
+        Sphere sphere = new Sphere(20, 20, 0.2f);
+        Geometry sphereGeo = new Geometry("test", sphere);
+
+        Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.LightGray);
+        sphereGeo.setMaterial(mat);
+
+        Node result = new Node("Sphere: " + entity.getId());
+        result.attachChild(sphereGeo);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
     protected Spatial createAmmoShotgun(Entity entity) {
         Spatial spatial = mapModels.get("AmmoShotgun20").deepClone();
         Node result = new Node("AmmoShotgun: " + entity.getId());
@@ -411,6 +425,9 @@ public class ModelViewState extends BaseAppState {
                 break;
             case ObjectTypes.SPHERE:
                 result = createSphere(entity);
+                break;
+            case ObjectTypes.WEAPON_SHELL:
+                result = createWeaponShell(entity);
                 break;
             case ObjectTypes.PICKUP_AMMO_SHOTGUN:
                 result = createAmmoShotgun(entity);

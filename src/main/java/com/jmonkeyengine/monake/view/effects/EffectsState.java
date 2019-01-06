@@ -33,12 +33,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmonkeyengine.monake.view.effects;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Sphere;
+import com.jmonkeyengine.monake.ConnectionState;
+import com.jmonkeyengine.monake.Main;
 import com.jmonkeyengine.monake.es.components.EffectComponent;
+import com.simsilica.es.Entity;
+import com.simsilica.es.EntityData;
+import com.simsilica.es.EntityId;
+import com.simsilica.es.EntitySet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +68,49 @@ public class EffectsState extends BaseAppState {
 
     static Logger log = LoggerFactory.getLogger(EffectsState.class);
 
+    private EntityData ed;
+    private EntitySet effectEntities;
+    private Node effectsNode;
+
+    private HashMap<EntityId, Spatial> entityEffects = new HashMap<>();
+
     @Override
     protected void initialize(Application aplctn) {
+
+        Main main = (Main) aplctn;
+
+        this.ed = getState(ConnectionState.class).getEntityData();
+        effectEntities = ed.getEntities(EffectComponent.class);
+
+        effectsNode = new Node("Effects_Node");
+        main.getRootNode().attachChild(effectsNode);
+
     }
 
     @Override
     protected void cleanup(Application aplctn) {
+    }
+
+    @Override
+    public void update(float tpf) {
+        super.update(tpf); //To change body of generated methods, choose Tools | Templates.
+
+        if (effectEntities.applyChanges()) {
+            for (Entity entity : effectEntities.getAddedEntities()) {
+                EffectComponent effect = entity.get(EffectComponent.class);
+                EffectType type = EffectType.values()[effect.getEffectType()];
+                createEffect(type, effect);
+            }
+
+            Iterator it = entityEffects.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<EntityId, Node> entry = (Map.Entry) it.next();
+                if (entry.getValue().getParent() == null) {
+                    it.remove();
+                }
+            }
+        }
+
     }
 
     @Override
@@ -79,12 +130,34 @@ public class EffectsState extends BaseAppState {
             case EXPLOSION:
                 break;
             case SHOTGUNPARTICLES:
+                createShotgunParticle(type, effect);
                 break;
             case TELEPORTEFFECT:
                 break;
             case CANCELEFFECT:
                 break;
         }
+    }
+
+    private void createShotgunParticle(EffectType type, EffectComponent effectInfo) {
+
+        Sphere sphere = new Sphere(20, 20, 0.2f);
+        Geometry sphereGeo = new Geometry("test", sphere);
+
+        Material mat = new Material(getApplication().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Red);
+        sphereGeo.setMaterial(mat);
+
+        Node effectSpatial = new Node("Sphere: " + effectInfo.getEffectEntity());
+        effectSpatial.attachChild(sphereGeo);
+        effectSpatial.setUserData("entityId", effectInfo.getEffectEntity().getId());
+
+        effectSpatial.setLocalTranslation(effectInfo.getEffectPosition());
+        effectSpatial.addControl(new RemoveAfterDelayControl(250));
+        
+        entityEffects.put(effectInfo.getEffectEntity(), effectSpatial);
+        effectsNode.attachChild(effectSpatial);
+
     }
 
 }
