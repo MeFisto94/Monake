@@ -51,6 +51,7 @@ import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
 import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +71,15 @@ public class GameEntities {
 
     public static final Vector3f cameraOffset = new Vector3f(0f, 1.75f, 0f);
 
+    public static final ArrayList<Vector3f> spawnLocations = new ArrayList();
+    
     public static EntityId createCharacter(EntityId parent, EntityData ed) {
+        // TODO randomize spawn locations
+        Vector3f spawnLocation = GameEntities.spawnLocations.get(0); // 29.5f, 20f, -30.4f
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);
-        ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(29.5f, 20f, -30.4f),
+        ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(spawnLocation),
                 ShapeInfos.playerInfo(ed));
         ed.setComponents(result, new HealthComponent(100),new AmmoShotgunComponent(25), new AmmoNailgunComponent(0), new ArmorComponent(0));
         return result;

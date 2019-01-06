@@ -376,6 +376,7 @@ public class ModelViewState extends BaseAppState {
         Spatial result = modelIndex.get(entity.getId());
         if (result != null) {
             return result;
+
         }
 
         // Else figure out what type to create... 
@@ -416,6 +417,7 @@ public class ModelViewState extends BaseAppState {
         modelRoot.attachChild(result);
 
         return result;
+
     }
 
     protected void updateModel(Spatial spatial, Entity entity, boolean updatePosition) {
@@ -431,6 +433,7 @@ public class ModelViewState extends BaseAppState {
     protected void removeModel(Spatial spatial, Entity entity) {
         modelIndex.remove(entity.getId());
         spatial.removeFromParent();
+
     }
 
     private class Mob {

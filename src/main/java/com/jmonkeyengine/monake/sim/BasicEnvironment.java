@@ -152,6 +152,7 @@ public class BasicEnvironment extends AbstractGameSystem {
         value = spatial.getUserData("Spawn");
         if (value != null) {
             log.info("Spawn: " + spatial.getLocalTranslation());
+            GameEntities.spawnLocations.add(spatial.getLocalTranslation().clone());
             spatial.removeFromParent();
         }
 

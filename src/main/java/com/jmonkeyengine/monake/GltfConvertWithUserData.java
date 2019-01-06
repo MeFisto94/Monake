@@ -67,23 +67,29 @@ public class GltfConvertWithUserData extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        GltfModelKey modelKey = new GltfModelKey("Scenes/quakestartleveltextured_nosky.gltf");
-        ExtrasLoader extras = new ExtrasLoadererer();
-        modelKey.setExtrasLoader(extras);
-
-        Spatial model = assetManager.loadModel(modelKey);
-
         DirectionalLight dl = new DirectionalLight();
         dl.setColor(ColorRGBA.White);
         dl.setDirection(new Vector3f(0, -1, -1).normalizeLocal());
         rootNode.addLight(dl);
+
+        convertGltf("Scenes/quakestartleveltextured_nosky.gltf", "assets/Models/level.j3o");
+        convertGltf("Scenes/single_shotgun.gltf", "assets/Models/single_shotgun.j3o");
+
+    }
+
+    private void convertGltf(String inputPath, String outputPath) {
+        GltfModelKey modelKey = new GltfModelKey(inputPath);
+        ExtrasLoader extras = new ExtrasLoadererer();
+        modelKey.setExtrasLoader(extras);
+
+        Spatial model = assetManager.loadModel(modelKey);
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BinaryExporter exp = new BinaryExporter();
             exp.save(model, baos);
 
-            try (OutputStream outputStream = new FileOutputStream("assets/Models/level.j3o")) {
+            try (OutputStream outputStream = new FileOutputStream(outputPath)) {
                 baos.writeTo(outputStream);
             }
 
@@ -97,11 +103,11 @@ public class GltfConvertWithUserData extends SimpleApplication {
         @Override
         public Object handleExtras(GltfLoader loader, String parentName, JsonElement parent, JsonElement extras, Object input) {
             // if its a geometry, we want to add all the geometry userdata 
-            
+
             if (input instanceof Spatial) {
                 if (extras.isJsonObject()) {
                     JsonObject ext = extras.getAsJsonObject();
-                    for(Entry<String, JsonElement> element : ext.entrySet()) {
+                    for (Entry<String, JsonElement> element : ext.entrySet()) {
                         Spatial spatial = (Spatial) input;
                         spatial.setUserData(element.getKey(), element.getValue().getAsString());
                     }

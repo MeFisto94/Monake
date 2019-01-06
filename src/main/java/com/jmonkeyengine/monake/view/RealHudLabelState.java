@@ -33,7 +33,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmonkeyengine.monake.view;
 
 import com.jme3.animation.AnimChannel;
@@ -42,6 +41,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -59,9 +59,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *  Displays a HUD for the current player
+ * Displays a HUD for the current player
  *
- *  @author MeFisto94
+ * @author MeFisto94
  */
 public class RealHudLabelState extends BaseAppState {
 
@@ -85,7 +85,7 @@ public class RealHudLabelState extends BaseAppState {
     }
 
     @Override
-    protected void initialize( Application app ) {
+    protected void initialize(Application app) {
         hudLabelRoot = new Node("HUD labels");
         this.ed = getState(ConnectionState.class).getEntityData();
 
@@ -93,7 +93,7 @@ public class RealHudLabelState extends BaseAppState {
         lblAmmo = new Label("1337", new ElementId("ammo.hud.label"), "quake");
         lblArmor = new Label("9000", new ElementId("armor.hud.label"), "quake");
         lblHealth = new Label("42", new ElementId("health.hud.label"), "quake");
-        
+
         lblHealth.setColor(ColorRGBA.Red);
         lblHealth.setFontSize(128f);
         lblHealth.setTextVAlignment(VAlignment.Center);
@@ -116,8 +116,8 @@ public class RealHudLabelState extends BaseAppState {
         uiContainer.setLocalTranslation(0f, 0.25f * app.getCamera().getHeight(), 0f);
         hudLabelRoot.attachChild(uiContainer);
         hudLabelRoot.setLocalScale(0.5f);
-        hudLabelRoot.move(300f,0,0);
-        
+        hudLabelRoot.move(300f, 0, 0);
+
         //@TODO: Doesn't work, get a proper Border.
         //portraitContainer.setBorder(new QuadBackgroundComponent(ColorRGBA.Red));
         portraitContent = app.getAssetManager().loadModel("Models/Jaime.j3o");
@@ -138,6 +138,16 @@ public class RealHudLabelState extends BaseAppState {
 
         portraitContainer.addChild(lblArmor); //, BorderLayout.Position.West);
         portraitContainer.addChild(portrait); // , BorderLayout.Position.Center);
+
+        Spatial shotGun = getApplication().getAssetManager().loadModel("Models/single_shotgun.j3o");
+        shotGun.rotate(0, FastMath.HALF_PI, FastMath.QUARTER_PI / 2);
+        shotGun.addLight(new DirectionalLight(Vector3f.UNIT_Z.negate()));
+        shotGun.addLight(new DirectionalLight(Vector3f.UNIT_Z.negate()));
+        shotGun.addLight(new DirectionalLight(Vector3f.UNIT_Z.negate()));
+        shotGun.setLocalScale(1400f);
+        shotGun.setLocalTranslation(600f, -1800f, 0f);
+        ((Main) getApplication()).getGuiNode().attachChild(shotGun);
+
     }
 
     @Override
@@ -146,7 +156,7 @@ public class RealHudLabelState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        ((Main)getApplication()).getGuiNode().attachChild(hudLabelRoot);
+        ((Main) getApplication()).getGuiNode().attachChild(hudLabelRoot);
         playerStats = ed.watchEntity(getState(GameSessionState.class).getCharacterId(), HealthComponent.class, ArmorComponent.class);
         if (playerStats.isComplete()) {
             updateStats();
@@ -156,13 +166,13 @@ public class RealHudLabelState extends BaseAppState {
     @Override
     protected void onDisable() {
         hudLabelRoot.removeFromParent();
-        
+
         playerStats.release();
         playerStats = null;
     }
 
     @Override
-    public void update( float tpf ) {
+    public void update(float tpf) {
         if (playerStats.applyChanges()) { // Update the UI
             updateStats();
         }
