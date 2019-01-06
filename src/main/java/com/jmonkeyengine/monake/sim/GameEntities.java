@@ -50,6 +50,7 @@ import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
+import com.simsilica.es.common.Decay;
 import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
 import java.util.ArrayList;
@@ -111,6 +112,14 @@ public class GameEntities {
         EntityId result = ed.createEntity();
         ed.setComponents(result, ObjectTypes.sphereType(ed), new SpawnPosition(location),
                 new Mass(1), ShapeInfos.sphereInfo(ed));
+        return result;
+    }
+
+    public static EntityId createWeaponShell(EntityData ed, Vector3f location, int damage, long currentTime) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.pickupHealthType(ed), new SpawnPosition(location),
+                new HealthComponent(damage), ShapeInfos.sphereInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
+                new Decay(currentTime, currentTime + 1000));
         return result;
     }
 

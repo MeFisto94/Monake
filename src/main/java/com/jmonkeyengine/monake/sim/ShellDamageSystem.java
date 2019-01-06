@@ -99,9 +99,9 @@ public class ShellDamageSystem extends AbstractGameSystem implements EntityColli
         String objectType2 = objectTypeClass2.getTypeName(ed);
 
         // @TODO: Change to ObjectTypes.WeaponShell, which contains a Health Component, a Ghost Component and a Decay Component (when not hitting something)
-        if (objectType1.equals(ObjectTypes.PLAYER) && objectType2.equals(ObjectTypes.PICKUP_HEALTH)) {
+        if (objectType1.equals(ObjectTypes.PLAYER) && objectType2.equals(ObjectTypes.WEAPON_SHELL)) {
             processHealthPlayerCollision(objectEntity1, objectEntity2);
-        } else if (objectType2.equals(ObjectTypes.PLAYER) && objectType1.equals(ObjectTypes.PICKUP_HEALTH)) {
+        } else if (objectType2.equals(ObjectTypes.PLAYER) && objectType1.equals(ObjectTypes.WEAPON_SHELL)) {
             processHealthPlayerCollision(objectEntity2, objectEntity1);
         }
     }

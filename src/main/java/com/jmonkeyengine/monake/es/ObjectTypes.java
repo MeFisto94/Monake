@@ -54,6 +54,7 @@ public class ObjectTypes {
     public static final String PICKUP_HEALTH = "pickupHealth";
     public static final String PICKUP_AMMO_SHOTGUN = "pickupAmmoShotgun";
     public static final String PICKUP_AMMO_NAILGUN = "pickupAmmoNailgun";
+    public static final String WEAPON_SHELL = "weaponShell";
 
     public static ObjectType shipType(EntityData ed) {
         return ObjectType.create(SHIP, ed);
@@ -85,6 +86,10 @@ public class ObjectTypes {
 
     public static ObjectType pickupAmmoNailgunType(EntityData ed) {
         return ObjectType.create(PICKUP_AMMO_NAILGUN, ed);
+    }
+
+    public static ObjectType weaponShell(EntityData ed) {
+        return ObjectType.create(WEAPON_SHELL, ed);
     }
 
     public static ObjectType playerType(EntityData ed) {
