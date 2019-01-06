@@ -40,7 +40,6 @@ public class DeathSystem extends AbstractGameSystem {
 
     @Override
     protected void initialize() {
-        
         ed = getSystem(EntityData.class);
         if (ed == null) {
             throw new RuntimeException("EntityData object is required for a: " + this.getClass());
@@ -60,21 +59,19 @@ public class DeathSystem extends AbstractGameSystem {
     @Override
     public void update(SimTime time) {
         super.update(time);
+
         // if a player gets to zero health, we MURDER them and respawn them at a random spawn location after 2 seconds?
-        playerSet.applyChanges();
+        if (playerSet.applyChanges()) {
+            for (Entity entity : playerSet.getChangedEntities()) {
+                HealthComponent health = entity.get(HealthComponent.class);
 
-        for (Entity entity : playerSet) {
-            HealthComponent health = entity.get(HealthComponent.class);
-
-            if (health != null && health.isDead()) {
-                // we need to do some respawning action here on this entity.
-                log.info("Player has died, RESPAWNING!!!!");
-                respawnPlayer(entity.getId(), ed);
-
+                if (health != null && health.isDead()) {
+                    // we need to do some respawning action here on this entity.
+                    log.info("Player has died, RESPAWNING!!!!");
+                    respawnPlayer(entity.getId(), ed);
+                }
             }
-
         }
-
     }
 
     public void respawnPlayer(EntityId player, EntityData ed) {
