@@ -46,25 +46,21 @@ import com.jme3.network.service.rmi.RmiHostedService;
 import com.jme3.network.service.rpc.RpcHostedService;
 import com.jmonkeyengine.monake.GameConstants;
 import com.jmonkeyengine.monake.SimpleErrorHandlingSystem;
-import com.jmonkeyengine.monake.bullet.*;
+import com.jmonkeyengine.monake.bullet.BulletSystem;
+import com.jmonkeyengine.monake.bullet.CollisionShapes;
+import com.jmonkeyengine.monake.bullet.DefaultCollisionShapes;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.Position;
 import com.jmonkeyengine.monake.es.SphereShape;
-import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
-import com.jmonkeyengine.monake.es.components.ArmorComponent;
-import com.jmonkeyengine.monake.es.components.EffectComponent;
-import com.jmonkeyengine.monake.es.components.HealthComponent;
-import com.jmonkeyengine.monake.es.components.IsPickupComponent;
+import com.jmonkeyengine.monake.es.components.*;
 import com.jmonkeyengine.monake.net.chat.server.ChatHostedService;
 import com.jmonkeyengine.monake.sim.*;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
-import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
 import com.simsilica.es.base.DefaultEntityData;
-import com.simsilica.es.common.Decay;
 import com.simsilica.es.server.EntityDataHostedService;
 import com.simsilica.es.server.EntityUpdater;
 import com.simsilica.ethereal.EtherealHost;
@@ -224,6 +220,8 @@ public class GameServer {
         systems.register(ShootingSystem.class, new ShootingSystem(ethereal.getTimeSource()));
 
         systems.addSystem(new PickupSystem());
+
+        systems.addSystem(new ShellDamageSystem());
 
         log.info("Initializing game systems...");
         // Initialize the game system manager to prepare to start later
