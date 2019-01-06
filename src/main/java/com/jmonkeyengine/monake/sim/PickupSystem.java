@@ -16,12 +16,12 @@ import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.ObjectTypes;
 import com.jmonkeyengine.monake.es.ShapeInfos;
+import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.jmonkeyengine.monake.es.components.IsPickupComponent;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityData;
-import com.simsilica.es.EntityId;
 import com.simsilica.es.EntitySet;
 import com.simsilica.es.filter.FieldFilter;
 import com.simsilica.ethereal.TimeSource;
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PickupSystem extends AbstractGameSystem implements EntityCollisionListener {
+
     static Logger log = LoggerFactory.getLogger(PickupSystem.class);
     EntityData ed;
     EntitySet healthSet;
@@ -43,62 +44,76 @@ public class PickupSystem extends AbstractGameSystem implements EntityCollisionL
     @Override
     protected void initialize() {
         ed = getSystem(EntityData.class);
-        if( ed == null ) {
+        if (ed == null) {
             throw new RuntimeException("ShootingSystem requires an EntityData object.");
         }
 
         getSystem(BulletSystem.class).addEntityCollisionListener(this);
-
-        healthSet = ed.getEntities(ObjectType.class, Ghost.class, HealthComponent.class, IsPickupComponent.class);
-        playerSet = ed.getEntities(new FieldFilter(ObjectType.class, "type", ObjectTypes.playerType(ed).getType()),
-                ObjectType.class, HealthComponent.class);
-        //healthSet = ed.getEntities(ObjectType.class, BodyPosition.class, Ghost.class, HealthComponent.class);
-        //healthSet = ed.getEntities(ObjectType.class, BodyPosition.class, Ghost.class, HealthComponent.class);
     }
 
     @Override
     protected void terminate() {
-        healthSet.release();
-        playerSet.release();
         getSystem(BulletSystem.class).removeEntityCollisionListener(this);
     }
 
     @Override
     public void update(SimTime time) {
         super.update(time);
-        healthSet.applyChanges();
-        playerSet.applyChanges();
     }
 
     @Override
     public void collision(EntityPhysicsObject object1, EntityPhysicsObject object2, PhysicsCollisionEvent event) {
-        EntityGhostObject ghost;
-        EntityRigidBody player;
 
-        if (object1 instanceof EntityGhostObject && object2 instanceof EntityRigidBody) {
-            ghost = (EntityGhostObject)object1;
-            player = (EntityRigidBody)object2;
-        } else if (object2 instanceof EntityGhostObject) {
-            ghost = (EntityGhostObject)object2;
-            player = (EntityRigidBody)object1;
-        } else {
-            return; // Skip event, not sure what happened
+        // which objects do we have, is it a player on player, is it player on bullet? what happened
+        // can directly access the entity system for this, because we're on the server and it will be fast
+        // can't garuntee which components are going to be in the colliding objects so its hard to filter
+        Entity objectEntity1 = ed.getEntity(object1.getId(), ObjectType.class);
+        Entity objectEntity2 = ed.getEntity(object2.getId(), ObjectType.class);
+
+        ObjectType objectTypeClass1 = objectEntity1.get(ObjectType.class);
+        ObjectType objectTypeClass2 = objectEntity2.get(ObjectType.class);
+
+        String objectType1 = objectTypeClass1.getTypeName(ed);
+        String objectType2 = objectTypeClass2.getTypeName(ed);
+
+        if (objectType1.equals(ObjectTypes.PLAYER) && objectType2.equals(ObjectTypes.PICKUP_HEALTH)) {
+            processHealthPlayerCollision(objectEntity1, objectEntity2);
+        } else if (objectType2.equals(ObjectTypes.PLAYER) && objectType1.equals(ObjectTypes.PICKUP_HEALTH)) {
+            processHealthPlayerCollision(objectEntity2, objectEntity1);
         }
 
-        if (healthSet.containsId(ghost.getId()) && playerSet.containsId(player.getId())) {
-            Entity eHealth = healthSet.getEntity(ghost.getId());
-            HealthComponent healthBoost = eHealth.get(HealthComponent.class);
-            HealthComponent playerHealth = playerSet.getEntity(player.getId()).get(HealthComponent.class);
-
-            if (playerHealth.isDead()) {
-                return;
-            }
-
-            int newHealth = Math.min(200, playerHealth.getHealth() + healthBoost.getHealth());
-            System.out.println("Healing for " + newHealth);
-            ed.setComponent(player.getId(), new HealthComponent(newHealth));
-            ed.removeEntity(ghost.getId());
-            // @TODO: Reschedule for Respawn Timer
+        if (objectType1.equals(ObjectTypes.PLAYER) && objectType2.equals(ObjectTypes.PICKUP_AMMO_SHOTGUN)) {
+            processAmmoShotgunPlayerCollision(objectEntity1, objectEntity2);
+        } else if (objectType2.equals(ObjectTypes.PLAYER) && objectType1.equals(ObjectTypes.PICKUP_AMMO_SHOTGUN)) {
+            processAmmoShotgunPlayerCollision(objectEntity2, objectEntity1);
         }
+
     }
+
+    private void processHealthPlayerCollision(Entity player, Entity health) {
+        HealthComponent healthBoost = ed.getComponent(health.getId(), HealthComponent.class);
+        HealthComponent playerHealth = ed.getComponent(player.getId(), HealthComponent.class);
+
+        if (playerHealth.isDead()) {
+            return;
+        }
+
+        int newHealth = Math.min(200, playerHealth.getHealth() + healthBoost.getHealth());
+        System.out.println("Healing for " + newHealth);
+        ed.setComponent(player.getId(), new HealthComponent(newHealth));
+        ed.removeEntity(health.getId());
+        // @TODO: Reschedule for Respawn Timer
+    }
+
+    private void processAmmoShotgunPlayerCollision(Entity player, Entity ammo) {
+        AmmoShotgunComponent ammoBoost = ed.getComponent(ammo.getId(), AmmoShotgunComponent.class);
+        AmmoShotgunComponent playerAmmo = ed.getComponent(player.getId(), AmmoShotgunComponent.class);
+
+        int newAmmo = Math.min(200, playerAmmo.getAmmo() + ammoBoost.getAmmo());
+        System.out.println("Shotgun Ammo for " + newAmmo);
+        ed.setComponent(player.getId(), new AmmoShotgunComponent(newAmmo));
+        ed.removeEntity(ammo.getId());
+        // @TODO: Reschedule for Respawn Timer
+    }
+
 }
