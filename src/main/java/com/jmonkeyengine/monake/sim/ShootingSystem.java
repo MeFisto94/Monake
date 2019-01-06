@@ -13,6 +13,7 @@ import com.jme3.scene.shape.Cylinder;
 import com.jmonkeyengine.monake.es.BodyPosition;
 import com.jmonkeyengine.monake.es.ObjectType;
 import com.jmonkeyengine.monake.es.ShapeInfos;
+import com.jmonkeyengine.monake.es.components.ActiveWeaponComponent;
 import com.jmonkeyengine.monake.es.components.HealthComponent;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.Entity;
@@ -24,15 +25,21 @@ import com.simsilica.ethereal.TimeSource;
 import com.simsilica.mathd.trans.PositionTransition;
 import com.simsilica.sim.AbstractGameSystem;
 import com.simsilica.sim.SimTime;
+import java.util.HashMap;
+import static java.util.Objects.isNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ShootingSystem extends AbstractGameSystem {
+
     static Logger log = LoggerFactory.getLogger(ShootingSystem.class);
     EntityData ed;
     EntitySet movingSets;
     Spatial world;
     TimeSource timeSource;
+
+    HashMap<EntityId, Long> singleShotgunLastShots = new HashMap<>();
+    HashMap<EntityId, Long> nailgunLastShots = new HashMap<>();
 
     public ShootingSystem(TimeSource timeSource) {
         this.timeSource = timeSource;
@@ -41,11 +48,11 @@ public class ShootingSystem extends AbstractGameSystem {
     @Override
     protected void initialize() {
         ed = getSystem(EntityData.class);
-        if( ed == null ) {
+        if (ed == null) {
             throw new RuntimeException("ShootingSystem requires an EntityData object.");
         }
 
-        movingSets = ed.getEntities(ObjectType.class, BodyPosition.class, HealthComponent.class);
+        movingSets = ed.getEntities(ObjectType.class, BodyPosition.class, HealthComponent.class, ActiveWeaponComponent.class);
     }
 
     @Override
@@ -67,6 +74,12 @@ public class ShootingSystem extends AbstractGameSystem {
             eShooter = movingSets.getEntity(shooter);
         }
 
+        if (isNull(eShooter)) {
+            // when you get entities from entity lists, occasionally they will be null
+            // discard the shooting attempt if the shooter is null
+            return;
+        }
+
         // We probably have to check all of this, because clients could still send something like that to us.
         if (eShooter.get(HealthComponent.class).isDead()) {
             log.error("Someone dead tried to shoot!");
@@ -78,20 +91,91 @@ public class ShootingSystem extends AbstractGameSystem {
             return;
         }
 
+        // we also need to know what active weapon they are using is, so that we know what kind of behavior to have
+        // shotguns are 'instant' hits
+        // all other guns are moving object projectile systems.
+        ActiveWeaponComponent active = eShooter.get(ActiveWeaponComponent.class);
+        Long lastTimeFired;
+
+        switch (WeaponTypes.values()[active.getWeaponNumber()]) {
+            case SINGLESHOTGUN:
+                // check ammo
+                lastTimeFired = singleShotgunLastShots.get(eShooter.getId());
+                if (lastTimeFired == null || (System.currentTimeMillis() - lastTimeFired) > 500) {
+                    // generate cloud of bullets at the correct place and radius
+                    handleShotgunShot(eShooter);
+                    singleShotgunLastShots.put(eShooter.getId(), System.currentTimeMillis());
+                }
+                break;
+            case NAILGUN:
+                // check ammo
+                lastTimeFired = nailgunLastShots.get(eShooter.getId());
+                if (lastTimeFired == null || (System.currentTimeMillis() - lastTimeFired) > 100) {
+                    // generate bullets and set their direction/velocity in the physics system
+                    handleNailgunShot(eShooter);
+                    nailgunLastShots.put(eShooter.getId(), System.currentTimeMillis());
+                }
+
+                break;
+            default:
+                return;
+        }
+
+    }
+
+    // 
+    private void handleShotgunShot(Entity eShooter) {
+
+        // up here we need to figure out if we even have ammo, if we don't, FAILURE!!
+        CollisionResults cr = castRayFromPlayer(eShooter);
+        if (cr.size() > 0) {
+            CollisionResult res = cr.getClosestCollision();
+
+            // needs distance for shotgun shell radius calc
+            float shotgunConeRadius = res.getDistance() / 20f;
+            Vector3f contactLocation = res.getContactPoint();
+
+            // for testing, generate a rigid body at the contact point.
+            Vector3f contactLocation1 = contactLocation.add(shotgunConeRadius, 0, 0);
+            Vector3f contactLocation2 = contactLocation.add(-shotgunConeRadius, 0, 0);
+            Vector3f contactLocation3 = contactLocation.add(0, shotgunConeRadius, 0);
+            Vector3f contactLocation4 = contactLocation.add(0, -shotgunConeRadius, 0);
+
+            GameEntities.createSphere(ed, contactLocation1);
+            GameEntities.createSphere(ed, contactLocation2);
+            GameEntities.createSphere(ed, contactLocation3);
+            GameEntities.createSphere(ed, contactLocation4);
+
+//            if (res.getGeometry().getUserData("player") == Boolean.valueOf(true)) {
+//                Long victimId = res.getGeometry().getUserData("entityId");
+//                if (victimId == null) {
+//                    throw new IllegalStateException("Shot a player which has an entityId User-Data attached to it, but isn't known to the entitySet. Impossible");
+//                }
+//
+//                Entity eVictim = movingSets.getEntity(new EntityId(victimId));
+//                log.warn("Player " + eShooter.getId() + " shot " + eVictim.getId());
+//
+//                ed.setComponents(eVictim.getId(), new HealthComponent(Math.max(0, eVictim.get(HealthComponent.class).getHealth() - 30)));
+//            }
+        }
+    }
+
+    private void handleNailgunShot(Entity eShooter) {
+        // to be implemented
+    }
+
+    private CollisionResults castRayFromPlayer(Entity eShooter) {
         Node raycastNode = new Node();
         raycastNode.attachChild(world);
-
-        CapsuleCollisionShape capsuleShape = (CapsuleCollisionShape)CollisionShapeProvider.lookup(ShapeInfos.playerInfo(ed));
-
+        CapsuleCollisionShape capsuleShape = (CapsuleCollisionShape) CollisionShapeProvider.lookup(ShapeInfos.playerInfo(ed));
         BodyPosition bodyPos = eShooter.get(BodyPosition.class);
         // BodyPosition requires special management to make
         // sure all instances of BodyPosition are sharing the same
         // thread-safe history buffer.  Everywhere it's used, it should
         // be 'initialized'.
-        bodyPos.initialize(shooter, 12);
-
-        for (Entity e: movingSets) {
-            if (e.getId().equals(shooter)) {
+        bodyPos.initialize(eShooter.getId(), 12);
+        for (Entity e : movingSets) {
+            if (e.getId().equals(eShooter.getId())) {
                 continue;
             }
 
@@ -111,31 +195,14 @@ public class ShootingSystem extends AbstractGameSystem {
             capsule.setLocalRotation(posTrans.getRotation(timeSource.getTime()).mult(capsule.getLocalRotation()));
             raycastNode.attachChild(capsule);
         }
-
         PositionTransition posTrans = bodyPos.getFrame(timeSource.getTime());
         Ray shootingRay = new Ray(posTrans.getPosition(timeSource.getTime()).add(GameEntities.cameraOffset), posTrans.getRotation(timeSource.getTime()).mult(Vector3f.UNIT_Z));
         // @TODO: Weapon Range? shootingRay.setLimit(50);
-
         CollisionResults cr = new CollisionResults();
         raycastNode.collideWith(shootingRay, cr);
-
         log.warn("Raycast: " + shootingRay.getOrigin() + " => " + shootingRay.getDirection());
         log.warn("Numbers of Collisions: " + cr.size());
-
-        if (cr.size() > 0) {
-            CollisionResult res = cr.getClosestCollision();
-            if (res.getGeometry().getUserData("player") == Boolean.valueOf(true)) {
-                Long victimId = res.getGeometry().getUserData("entityId");
-                if (victimId == null) {
-                    throw new IllegalStateException("Shot a player which has an entityId User-Data attached to it, but isn't known to the entitySet. Impossible");
-                }
-
-                Entity eVictim = movingSets.getEntity(new EntityId(victimId));
-                log.warn("Player " + eShooter.getId() + " shot " + eVictim.getId());
-
-                ed.setComponents(eVictim.getId(), new HealthComponent(Math.max(0, eVictim.get(HealthComponent.class).getHealth() - 30)));
-            }
-        }
+        return cr;
     }
 
     @Override
@@ -145,7 +212,7 @@ public class ShootingSystem extends AbstractGameSystem {
 
         if (world == null) {
             try {
-                world = ServerApplication.self.getAssetManager().loadModel("Models/level.j3o");
+                world = CollisionShapeProvider.world;
             } catch (AssetNotFoundException anf) {
                 anf.printStackTrace();
             }

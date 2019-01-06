@@ -49,6 +49,7 @@ public class ObjectTypes {
     public static final String GRAV_SPHERE = "gravSphere";
     public static final String WORLD = "world";
     public static final String BOX = "box";
+    public static final String SPHERE = "sphere"; // for testing
     public static final String PLAYER = "player";
     public static final String PICKUP_HEALTH = "pickupHealth";
     public static final String PICKUP_AMMO_SHOTGUN = "pickupAmmoShotgun";
@@ -68,6 +69,10 @@ public class ObjectTypes {
 
     public static ObjectType boxType(EntityData ed) {
         return ObjectType.create(BOX, ed);
+    }
+
+    public static ObjectType sphereType(EntityData ed) {
+        return ObjectType.create(SPHERE, ed);
     }
 
     public static ObjectType pickupHealthType(EntityData ed) {

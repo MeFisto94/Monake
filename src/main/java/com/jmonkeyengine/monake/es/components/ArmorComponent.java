@@ -47,18 +47,24 @@ import com.simsilica.es.EntityComponent;
 public class ArmorComponent implements EntityComponent {
 
     private int armor; // Does sim-eth-es support byte to save bandwidth?
-
+    private int damageAbsorptionRate; // 30 is 30 percent, 60 is 60 percent, etc
+    
     /**
      *  For SpiderMonkey serialization purposes.
      */
     protected ArmorComponent() { }
 
-    public ArmorComponent(int armor) {
+    public ArmorComponent(int armor, int damageAbsorption) {
         this.armor = armor;
+        this.damageAbsorptionRate = damageAbsorptionRate;
     }
 
     public int getArmor() {
         return armor;
+    }
+
+    public int getDamageAbsorptionRate() {
+        return damageAbsorptionRate;
     }
 
     @Override

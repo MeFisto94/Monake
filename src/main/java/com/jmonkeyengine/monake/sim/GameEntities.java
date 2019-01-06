@@ -41,6 +41,7 @@ import com.jmonkeyengine.monake.bullet.Mass;
 import com.jmonkeyengine.monake.bullet.ShapeInfo;
 import com.jmonkeyengine.monake.bullet.SpawnPosition;
 import com.jmonkeyengine.monake.es.*;
+import com.jmonkeyengine.monake.es.components.ActiveWeaponComponent;
 import com.jmonkeyengine.monake.es.components.AmmoNailgunComponent;
 import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
 import com.jmonkeyengine.monake.es.components.ArmorComponent;
@@ -72,7 +73,7 @@ public class GameEntities {
     public static final Vector3f cameraOffset = new Vector3f(0f, 1.75f, 0f);
 
     public static final ArrayList<Vector3f> spawnLocations = new ArrayList();
-    
+
     public static EntityId createCharacter(EntityId parent, EntityData ed) {
         // TODO randomize spawn locations
         Vector3f spawnLocation = GameEntities.spawnLocations.get(0); // 29.5f, 20f, -30.4f
@@ -81,7 +82,7 @@ public class GameEntities {
         ed.setComponent(result, name);
         ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(spawnLocation),
                 ShapeInfos.playerInfo(ed));
-        ed.setComponents(result, new HealthComponent(100),new AmmoShotgunComponent(25), new AmmoNailgunComponent(0), new ArmorComponent(0));
+        ed.setComponents(result, new HealthComponent(100), new ActiveWeaponComponent(WeaponTypes.SINGLESHOTGUN.ordinal()), new AmmoShotgunComponent(25), new AmmoNailgunComponent(0), new ArmorComponent(0, 0));
         return result;
     }
 
@@ -103,6 +104,13 @@ public class GameEntities {
         EntityId result = ed.createEntity();
         ed.setComponents(result, ObjectTypes.boxType(ed), new SpawnPosition(xOffset, 500f, 0f),
                 new Mass(1), ShapeInfos.boxInfo(ed));
+        return result;
+    }
+
+    public static EntityId createSphere(EntityData ed, Vector3f location) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.sphereType(ed), new SpawnPosition(location),
+                new Mass(1), ShapeInfos.sphereInfo(ed));
         return result;
     }
 

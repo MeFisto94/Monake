@@ -5,6 +5,7 @@ import com.jme3.asset.AssetNotFoundException;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -64,6 +65,8 @@ public class CollisionShapeProvider {
             return new BoxCollisionShape(new Vector3f(1f, 1f, 1f));
         } else if (shapeInfo.getShapeId() == ShapeInfos.playerInfo(entityData).getShapeId()) {
             return new CapsuleCollisionShape(0.5f, 4f);
+        } else if (shapeInfo.getShapeId() == ShapeInfos.sphereInfo(entityData).getShapeId()) {
+            return new SphereCollisionShape(0.2f);
         }
 
         return null;
