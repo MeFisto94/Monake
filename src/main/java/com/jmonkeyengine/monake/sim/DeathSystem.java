@@ -67,7 +67,7 @@ public class DeathSystem extends AbstractGameSystem {
     }
 
     public void respawnPlayer(EntityId player, EntityData ed) {
-        ed.setComponents(player, new Mass(50f), new SpawnPosition(GameEntities.getRandomSpawnSpot()),
+        ed.setComponents(player, new SpawnPosition(GameEntities.getRandomSpawnSpot()),
                 new HealthComponent(100), new ActiveWeaponComponent(WeaponTypes.SINGLESHOTGUN.ordinal()),
                 new AmmoShotgunComponent(25), new AmmoNailgunComponent(0),
                 new ArmorComponent(0, 0));
