@@ -35,6 +35,7 @@
  */
 package com.jmonkeyengine.monake.sim;
 
+import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jmonkeyengine.monake.bullet.Ghost;
 import com.jmonkeyengine.monake.bullet.Mass;
@@ -75,19 +76,18 @@ public class GameEntities {
 
     static Logger log = LoggerFactory.getLogger(GameEntities.class);
     public static final Vector3f cameraOffset = new Vector3f(0f, 1.75f, 0f);
-    public static final ArrayList<Vector3f> spawnLocations = new ArrayList<>();
+    public static final ArrayList<Transform> spawnLocations = new ArrayList<>();
     protected static Random random = new Random();
 
-    public static Vector3f getRandomSpawnSpot() {
+    public static Transform getRandomSpawnSpot() {
         return spawnLocations.get(random.nextInt(spawnLocations.size()));
     }
 
     public static EntityId createCharacter(EntityId parent, EntityData ed) {
-        Vector3f spawnLocation = getRandomSpawnSpot(); // 29.5f, 20f, -30.4f
         EntityId result = ed.createEntity();
         Name name = ed.getComponent(parent, Name.class);
         ed.setComponent(result, name);
-        ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(spawnLocation),
+        ed.setComponents(result, ObjectTypes.playerType(ed), new Mass(50f), new SpawnPosition(getRandomSpawnSpot()),
                 ShapeInfos.playerInfo(ed));
         ed.setComponents(result, new HealthComponent(100), new ActiveWeaponComponent(WeaponTypes.SINGLESHOTGUN.ordinal()), new AmmoShotgunComponent(25), new AmmoNailgunComponent(0), new ArmorComponent(0, 0));
         return result;

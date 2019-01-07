@@ -57,6 +57,10 @@ public class SpawnPosition implements EntityComponent {
     
     protected SpawnPosition() {
     }
+
+    public SpawnPosition(Transform transform) {
+        this(transform.getTranslation(), transform.getRotation());
+    }
     
     public SpawnPosition( double x, double y, double z ) {
         this(new Vector3f((float)x, (float)y, (float)z), new Quaternion());
