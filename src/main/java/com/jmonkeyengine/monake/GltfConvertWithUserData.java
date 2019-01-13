@@ -73,7 +73,7 @@ public class GltfConvertWithUserData extends SimpleApplication {
         rootNode.addLight(dl);
 
         convertGltf("Scenes/quakestartleveltextured_nosky.gltf", "assets/Models/level.j3o");
-        convertGltf("Scenes/single_shotgun.gltf", "assets/Models/single_shotgun.j3o");
+        //convertGltf("Scenes/single_shotgun.gltf", "assets/Models/single_shotgun.j3o");
 
     }
 
@@ -83,6 +83,15 @@ public class GltfConvertWithUserData extends SimpleApplication {
         modelKey.setExtrasLoader(extras);
 
         Spatial model = assetManager.loadModel(modelKey);
+
+        model.breadthFirstTraversal(spatial -> {
+            if (spatial instanceof Geometry){
+                Geometry geo = (Geometry)spatial;
+                if (geo.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")){
+                    geo.getMaterial().setBoolean("UseSpecGloss", false);
+                }
+            }
+        });
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
