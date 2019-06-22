@@ -251,8 +251,9 @@ public class PlayerMovementState extends BaseAppState
         long time = System.nanoTime();
         if( time > nextSendTime ) {
             nextSendTime = time + sendFrequency;
-            
-            Quaternion rot = camera.getRotation();
+
+            // @TODO: Think about using getYaw() etc or removing these methods.
+            float yaw = camera.getRotation().toAngles(null)[1];
 
             // Z is forward
             thrust.x = (float)(side);
@@ -260,7 +261,7 @@ public class PlayerMovementState extends BaseAppState
             thrust.z = (float)(forward);
 
             thrust.normalizeLocal();
-            session.move(rot, thrust, flags);
+            session.move(yaw, thrust, flags);
  
             // Only update the position/speed display 20 times a second
             //if( spatial != null ) {                

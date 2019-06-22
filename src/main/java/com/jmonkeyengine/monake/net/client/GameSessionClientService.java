@@ -83,11 +83,11 @@ public class GameSessionClientService extends AbstractClientService
     }
     
     @Override
-    public void move( Quaternion dir, Vector3f movementDir, CharFlags flags) {
+    public void move( float yawAngle, Vector3f movementDir, CharFlags flags) {
         if( log.isTraceEnabled() ) {
-            log.trace("move(" + dir + ", " + movementDir + ")");
+            log.trace("move(" + yawAngle + ", " + movementDir + ")");
         }
-        getDelegate().move(dir, movementDir, flags);
+        getDelegate().move(yawAngle, movementDir, flags);
     }
 
     private GameSession getDelegate() {

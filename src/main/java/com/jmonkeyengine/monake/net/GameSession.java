@@ -36,10 +36,8 @@
 
 package com.jmonkeyengine.monake.net;
 
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.service.rmi.Asynchronous;
-
 import com.jmonkeyengine.monake.sim.CharFlags;
 import com.simsilica.es.EntityId;
 
@@ -67,5 +65,5 @@ public interface GameSession {
      *  state is continuous, it doesn't need to be reliable.  
      */
     @Asynchronous(reliable=false)
-    public void move( Quaternion rotation, Vector3f thrust, CharFlags flags);
+    public void move( float yawAngle, Vector3f thrust, CharFlags flags);
 }

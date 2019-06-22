@@ -252,11 +252,12 @@ public class GameSessionHostedService extends AbstractHostedConnectionService {
         }
         
         @Override   
-        public void move( Quaternion rotation, Vector3f thrust, CharFlags flags) {
+        public void move( float yawAngle, Vector3f thrust, CharFlags flags) {
             if( log.isTraceEnabled() ) {
-                log.trace("move(" + rotation + ", " + thrust + ", " + flags.toString() + " )");
+                log.trace("move(" + yawAngle + ", " + thrust + ", " + flags.toString() + " )");
             }
 
+            Quaternion rotation = new Quaternion().fromAngleAxis(yawAngle, Vector3f.UNIT_Y);
             characterDriver.setInput(rotation, thrust, flags);
 
             if (flags.getFlag(CharFlag.SHOOTING)) {
