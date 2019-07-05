@@ -54,7 +54,7 @@ public class PlayerAbilityFunctions {
 
     public static void initializeDefaultMappings( InputMapper inputMapper ) {
         if ( !inputMapper.hasMappings(F_SHOOT)) {
-            inputMapper.map(F_SHOOT, MouseInput.BUTTON_LEFT);
+            inputMapper.map(F_SHOOT, Button.MOUSE_BUTTON1);
             inputMapper.map(F_SHOOT, KeyInput.KEY_F);
             // @TODO: Investigate Joytick Button
             inputMapper.map(F_SHOOT, Button.JOYSTICK_BUTTON2);
