@@ -241,6 +241,7 @@ public class GameServer {
         Serializer.registerClass(EffectComponent.class, new FieldSerializer());
         Serializer.registerClass(IsPickupComponent.class, new FieldSerializer());
         Serializer.registerClass(CharFlags.class, new FieldSerializer());
+        Serializer.registerClass(TeamComponent.class, new FieldSerializer());
     }
 
     public Server getServer() {
