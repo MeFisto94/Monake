@@ -60,6 +60,7 @@ import com.jmonkeyengine.monake.GameSessionState;
 import com.jmonkeyengine.monake.Main;
 import com.jmonkeyengine.monake.TimeState;
 import com.jmonkeyengine.monake.es.*;
+import com.jmonkeyengine.monake.es.components.TeamComponent;
 import com.jmonkeyengine.monake.sim.CollisionShapeProvider;
 import com.simsilica.es.*;
 import com.simsilica.lemur.GuiGlobals;
@@ -167,23 +168,26 @@ public class ModelViewState extends BaseAppState {
         Spatial world;
 
         try {
-            world = getApplication().getAssetManager().loadModel("Models/level.j3o");
+            // @TODO: use the same model as in BasicEnvironment#start()
+            world = getApplication().getAssetManager().loadModel("Scenes/ctf_arena1.j3o");
+            world.setLocalScale(3f); // @TODO: Increase the map size
             world.depthFirstTraversal(new SceneGraphVisitorAdapter() {
                 @Override
                 public void visit(Geometry geom) {
                     super.visit(geom);
-                    if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
+                    // Not needed anymore, Blender 2.81 GLTF Exporter has that fixed long time ago, I guess
+                    /*if (geom.getMaterial().getMaterialDef().getAssetName().equals("Common/MatDefs/Light/PBRLighting.j3md")) {
                         //geom.getMaterial().setBoolean("UseMetallicFirstPacking", true);
                         geom.getMaterial().setBoolean("UseBrokenGLTFExporter", true);
-                    }
+                    }*/
 
-                    for (Light light : geom.getLocalLightList()) {
+                    /*for (Light light : geom.getLocalLightList()) {
                         if (light instanceof PointLight) {
                             light.setColor(light.getColor().mult(5));
                         }
                     }
 
-                    geom.getMaterial().getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Back);
+                    geom.getMaterial().getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Back);*/
                     processGameEntityFromMap(geom);
 
                 }
@@ -281,19 +285,19 @@ public class ModelViewState extends BaseAppState {
 
         value = spatial.getUserData("Spawn");
         if (value != null) {
-            log.info("Spawn: " + spatial.getLocalTranslation());
+            log.info("Spawn: " + spatial.getWorldTranslation());
             spatial.removeFromParent();
         }
 
         value = spatial.getUserData("Teleport");
         if (value != null) {
-            log.info("Teleporter: " + spatial.getLocalTranslation());
+            log.info("Teleporter: " + spatial.getWorldTranslation());
             spatial.removeFromParent();
         }
 
         value = spatial.getUserData("TeleportEndPoint");
         if (value != null) {
-            log.info("TeleporterEndPoint: " + spatial.getLocalTranslation());
+            log.info("TeleporterEndPoint: " + spatial.getWorldTranslation());
             spatial.removeFromParent();
         }
 

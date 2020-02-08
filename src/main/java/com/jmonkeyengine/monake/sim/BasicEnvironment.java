@@ -44,6 +44,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.SceneGraphVisitorAdapter;
 import com.jme3.scene.Spatial;
 import com.jmonkeyengine.monake.bullet.CollisionShapes;
+import com.jmonkeyengine.monake.es.Team;
 import com.jmonkeyengine.monake.util.server.ServerApplication;
 import com.simsilica.es.EntityData;
 import com.simsilica.mathd.Vec3d;
@@ -87,7 +88,9 @@ public class BasicEnvironment extends AbstractGameSystem {
     public void start() {
         // Load the Map here:
 
-        Spatial spatial = ServerApplication.self.getAssetManager().loadModel("Models/level.j3o");
+        //Spatial spatial = ServerApplication.self.getAssetManager().loadModel("Models/level.j3o");
+        Spatial spatial = ServerApplication.self.getAssetManager().loadModel("Scenes/ctf_arena1.j3o");
+        spatial.setLocalScale(3f); // @TODO: Scale the map instead
 
         processWorld(spatial);
 
@@ -97,7 +100,7 @@ public class BasicEnvironment extends AbstractGameSystem {
         CollisionShapeProvider.registerShapes(getSystem(CollisionShapes.class));
         GameEntities.createWorld(ed);
 
-        GameEntities.createHealthPickup(ed, 10, new Vector3f(30f, 2f, -40f));
+        //GameEntities.createHealthPickup(ed, 10, new Vector3f(30f, 2f, -40f));
 
 //        GameEntities.createAmmoShotgunPickup(ed, 100, new Vector3f(10f, 2f, -40f));
     }

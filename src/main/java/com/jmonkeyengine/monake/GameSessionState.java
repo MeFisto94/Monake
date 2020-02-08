@@ -36,10 +36,19 @@
 package com.jmonkeyengine.monake;
 
 import com.jme3.app.Application;
+import com.jme3.app.LegacyApplication;
+import com.jme3.app.SimpleApplication;
+import com.jme3.environment.EnvironmentCamera;
+import com.jme3.environment.LightProbeFactory;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
+import com.jme3.light.LightProbe;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.texture.Texture;
+import com.jme3.util.SkyFactory;
 import com.jmonkeyengine.monake.debug.TimeSequenceState;
 import com.jmonkeyengine.monake.net.GameSessionListener;
 import com.jmonkeyengine.monake.net.chat.ChatSessionListener;
@@ -152,7 +161,13 @@ public class GameSessionState extends CompositeAppState {
         addChild(new RealHudLabelState(), false);
 
         ((Main) getApplication()).getRootNode().addLight(new DirectionalLight(Vector3f.UNIT_Y.negate()));
-        ((Main) getApplication()).getRootNode().addLight(new AmbientLight(ColorRGBA.White.mult(0.5f)));
+        /*((Main) getApplication()).getRootNode().addLight(new AmbientLight(ColorRGBA.White.mult(0.5f)));*/
+        Node probe = (Node)getApplication().getAssetManager().loadModel("Textures/circus_envmap.j3o");
+        //Geometry skyBox = (Geometry)probe.getChild("Sky");
+        LightProbe light = (LightProbe)probe.getLocalLightList().get(0);
+
+        //((SimpleApplication)getApplication()).getRootNode().attachChild(skyBox);
+        ((SimpleApplication)getApplication()).getRootNode().addLight(light);
     }
 
     @Override
