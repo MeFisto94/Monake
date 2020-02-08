@@ -42,13 +42,7 @@ import com.jmonkeyengine.monake.bullet.Mass;
 import com.jmonkeyengine.monake.bullet.ShapeInfo;
 import com.jmonkeyengine.monake.bullet.SpawnPosition;
 import com.jmonkeyengine.monake.es.*;
-import com.jmonkeyengine.monake.es.components.ActiveWeaponComponent;
-import com.jmonkeyengine.monake.es.components.AmmoNailgunComponent;
-import com.jmonkeyengine.monake.es.components.AmmoShotgunComponent;
-import com.jmonkeyengine.monake.es.components.ArmorComponent;
-import com.jmonkeyengine.monake.es.components.DamageComponent;
-import com.jmonkeyengine.monake.es.components.HealthComponent;
-import com.jmonkeyengine.monake.es.components.IsPickupComponent;
+import com.jmonkeyengine.monake.es.components.*;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.Name;
@@ -151,6 +145,12 @@ public class GameEntities {
         ed.setComponents(result, ObjectTypes.pickupAmmoNailgunType(ed), new SpawnPosition(position),
                 new AmmoNailgunComponent(amount), ShapeInfos.boxInfo(ed), new Ghost(Ghost.COLLIDE_DYNAMIC),
                 new IsPickupComponent());
+        return result;
+    }
+
+    public static EntityId createFlag(EntityData ed, Vector3f position, Team team) {
+        EntityId result = ed.createEntity();
+        ed.setComponents(result, ObjectTypes.flagType(ed), new Position(new Vec3d(position)), new TeamComponent(team));
         return result;
     }
 

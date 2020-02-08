@@ -55,6 +55,7 @@ public class ObjectTypes {
     public static final String PICKUP_AMMO_SHOTGUN = "pickupAmmoShotgun";
     public static final String PICKUP_AMMO_NAILGUN = "pickupAmmoNailgun";
     public static final String WEAPON_SHELL = "weaponShell";
+    public static final String FLAG = "flag";
 
     public static ObjectType shipType(EntityData ed) {
         return ObjectType.create(SHIP, ed);
@@ -94,5 +95,9 @@ public class ObjectTypes {
 
     public static ObjectType playerType(EntityData ed) {
         return ObjectType.create(PLAYER, ed);
+    }
+
+    public static ObjectType flagType(EntityData ed) {
+        return ObjectType.create(FLAG, ed);
     }
 }

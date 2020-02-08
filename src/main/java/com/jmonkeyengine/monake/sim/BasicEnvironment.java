@@ -101,6 +101,7 @@ public class BasicEnvironment extends AbstractGameSystem {
         GameEntities.createWorld(ed);
 
         //GameEntities.createHealthPickup(ed, 10, new Vector3f(30f, 2f, -40f));
+        GameEntities.createFlag(ed, new Vector3f(-2.2f, -7f, 2f), Team.BLUE);
 
 //        GameEntities.createAmmoShotgunPickup(ed, 100, new Vector3f(10f, 2f, -40f));
     }

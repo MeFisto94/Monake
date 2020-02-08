@@ -39,6 +39,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.AssetNotFoundException;
+import com.jme3.asset.TextureKey;
 import com.jme3.light.Light;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
@@ -403,6 +404,22 @@ public class ModelViewState extends BaseAppState {
         return result;
     }
 
+    protected Spatial createFlag(Entity entity) {
+        Team team = ed.getComponent(entity.getId(), TeamComponent.class).getTeam();
+        Node flag = (Node)getApplication().getAssetManager().loadModel("Models/Flag.j3o");
+        flag.setLocalScale(3f); // Temporary
+        Geometry flagGeom = (Geometry)flag.getChild("FlagMesh");
+        Material mat = flagGeom.getMaterial();
+        // Currently the texture was baked into the j3o.
+        mat.setTexture("BaseColorMap", getApplication().getAssetManager().loadTexture(new TextureKey("Textures/Flag/FlagBase.png", false)));
+        ColorRGBA teamColor = team.equals(Team.RED) ? ColorRGBA.Red : ColorRGBA.Cyan;
+        mat.setColor("BaseColor", teamColor);
+        Node result = new Node("Flag: " + entity.getId());
+        result.attachChild(flag);
+        result.setUserData("entityId", entity.getId().getId());
+        return result;
+    }
+
     protected Spatial createModel(Entity entity) {
         // Check to see if one already exists
         Spatial result = modelIndex.get(entity.getId());
@@ -444,6 +461,9 @@ public class ModelViewState extends BaseAppState {
                 break;
             case ObjectTypes.PLAYER:
                 result = createPlayer(entity);
+                break;
+            case ObjectTypes.FLAG:
+                result = createFlag(entity);
                 break;
             default:
                 throw new RuntimeException("Unknown spatial type:" + typeName);
